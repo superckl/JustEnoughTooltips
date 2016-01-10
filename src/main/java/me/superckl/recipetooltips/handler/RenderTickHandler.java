@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import me.superckl.recipetooltips.recipe.RecipeNotFound;
 import me.superckl.recipetooltips.util.CraftingGridHelper;
 import me.superckl.recipetooltips.util.IRecipeMetaComparator;
+import me.superckl.recipetooltips.util.LogHelper;
 import me.superckl.recipetooltips.util.RecipeSpacer;
 import me.superckl.recipetooltips.util.RenderHelper;
 import net.minecraft.block.state.IBlockState;
@@ -25,10 +26,12 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -40,7 +43,8 @@ public class RenderTickHandler {
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
 	private final List<IRecipe> lastRecipes = Lists.newArrayList();
 	private final Random random = new Random();
-	private int listIndex;
+	private int itemIndex;
+	private int recipeIndex;
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderGameOverlayEvent.Pre e){
@@ -64,7 +68,8 @@ public class RenderTickHandler {
 			//LogHelper.info(toCheck.toString()+"|"+this.lastRecipes.get(0).getRecipeOutput().toString());
 			if(toCheck.getItem() != this.lastRecipes.get(0).getRecipeOutput().getItem()){
 				this.lastRecipes.clear();
-				this.listIndex = 0;
+				this.itemIndex = 0;
+				this.recipeIndex = 0;
 			}
 		//LogHelper.info("cleared recipes");
 		if(this.lastRecipes.isEmpty()){
@@ -116,16 +121,16 @@ public class RenderTickHandler {
 		net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
 
 		List<ItemStack> items = Collections.EMPTY_LIST;
-		final IRecipe recipe = this.lastRecipes.get(0);
+		final IRecipe recipe = this.lastRecipes.get(this.recipeIndex);
 
 		if(recipe instanceof ShapedRecipes){
 			items = Lists.newArrayList();
 			final ShapedRecipes sRecipe = (ShapedRecipes) recipe;
 			final ItemStack[] input = sRecipe.recipeItems;
-			for(int column = 0; column < 3; column++)
-				for(int row = 0; row < 3; row++)
-					if(row < sRecipe.recipeHeight && column < sRecipe.recipeWidth && column+row*sRecipe.recipeWidth < input.length)
-						items.add(input[column+row*sRecipe.recipeWidth]);
+			for(int row = 0; row < 3; row++)
+				for(int column = 0; column < 3; column++)
+					if(row < sRecipe.recipeHeight && column < sRecipe.recipeWidth && row+column*sRecipe.recipeWidth < input.length)
+						items.add(input[row+column*sRecipe.recipeWidth]);
 					else
 						items.add(null);
 		}else if(recipe instanceof ShapelessRecipes)
@@ -146,7 +151,7 @@ public class RenderTickHandler {
 								stack.getItem().getSubItems(stack.getItem(), CreativeTabs.tabAllSearch, newList);
 							else
 								newList.add(stack);
-						items.add(newList.get((int) (Math.floor((this.listIndex/80F)+this.random.nextInt(newList.size())) % newList.size())));
+						items.add(newList.get((int) (Math.floor((this.itemIndex/80F)) % newList.size())));
 					}
 				}
 		}else if(recipe instanceof ShapedOreRecipe){
@@ -154,11 +159,13 @@ public class RenderTickHandler {
 			final ShapedOreRecipe sRecipe = (ShapedOreRecipe) recipe;
 			final Object[] input = sRecipe.getInput();
 			final int widthHeight = CraftingGridHelper.getWidthHeight(input.length);
-			for(int column = 0; column < 3; column++)
-				for(int row = 0; row < 3; row++)
-					if(column < widthHeight && row < widthHeight && column+row*widthHeight < input.length){
-						final Object obj = input[column+row*widthHeight];
-						if(obj instanceof ItemStack)
+			for(int row = 0; row < 3; row++)
+				for(int column = 0; column < 3; column++)
+					if(column < widthHeight && row < widthHeight && row+column*widthHeight < input.length){
+						final Object obj = input[row+column*widthHeight];
+						if(obj == null)
+							items.add(null);
+						else if(obj instanceof ItemStack)
 							items.add((ItemStack) obj);
 						else if(obj instanceof List){
 							final List<ItemStack> list = (List<ItemStack>) obj;
@@ -171,7 +178,7 @@ public class RenderTickHandler {
 										stack.getItem().getSubItems(stack.getItem(), CreativeTabs.tabAllSearch, newList);
 									else
 										newList.add(stack);
-								items.add(newList.get((int) (Math.floor(this.listIndex/80F+this.random.nextInt(newList.size())) % newList.size())));
+								items.add(newList.get((int) (Math.floor(this.itemIndex/80F) % newList.size())));
 							}
 						}
 					}else
@@ -198,7 +205,21 @@ public class RenderTickHandler {
 		net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableBlend();
-		this.listIndex++;
+		this.itemIndex++;
 	}
 
+	@SubscribeEvent
+	public void onMouseInput(MouseEvent e){
+		if(this.lastRecipes.isEmpty() || this.lastRecipes.get(0) instanceof RecipeNotFound || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+			return;
+		if(e.dwheel != 0){
+			e.setCanceled(true);
+			this.recipeIndex += Math.signum(e.dwheel);
+			if(this.recipeIndex < 0)
+				this.recipeIndex = this.lastRecipes.size()-1;
+			else if(this.recipeIndex >= this.lastRecipes.size())
+				this.recipeIndex = 0;
+		}
+	}
+	
 }
