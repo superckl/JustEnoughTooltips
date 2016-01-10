@@ -31,4 +31,9 @@ public class RecipeSpacer {
 		return this.hasNext;
 	}
 
+	public void reset(){
+		this.row = this.column = 0;
+		this.hasNext = this.rows > 0 && this.columns > 0;
+	}
+
 }
