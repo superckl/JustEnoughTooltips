@@ -1,0 +1,27 @@
+.classpath
+.gradle/*
+.project
+.settings/*
+eclipse/*
+bin/*
+Techne/*
+config/*
+saves/*
+screenshots/*
+logs/*
+crash-reports/*
+options.txt
+usernamecache.json
+Logo/*
+/bin/
+build.bat
+desktop.ini
+eclipse.bat
+setup.bat
+src/main/resources/nei_at.cfg
+build/*
+run/*
+BiomeTweaker 1.8.8_Client.launch
+BiomeTweaker 1.8.8_Server.launch
+RecipeTooltips_Client.launch
+RecipeTooltips_Server.launch

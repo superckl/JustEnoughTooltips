@@ -1,0 +1,21 @@
+[
+{
+  "modid": "RecipeTooltips",
+  "name": "RecipeTooltips",
+  "description": "Helps to quickly view and find recipes for items.",
+  "version": "${mod_version}",
+  "mcversion": "${minecraft_version}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": [
+    "superckl"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]
