@@ -13,7 +13,6 @@ import me.superckl.recipetooltips.recipe.CraftingRecipeWrapper;
 import me.superckl.recipetooltips.recipe.RecipeMultiItemStack;
 import me.superckl.recipetooltips.recipe.RecipeNotFound;
 import me.superckl.recipetooltips.util.CraftingRecipeMetaComparator;
-import me.superckl.recipetooltips.util.LogHelper;
 import me.superckl.recipetooltips.util.RecipeSpacer;
 import me.superckl.recipetooltips.util.RenderHelper;
 import net.minecraft.block.state.IBlockState;
@@ -28,6 +27,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -52,7 +52,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderGameOverlayEvent.Pre e){
-		if(e.type != ElementType.CROSSHAIRS || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+		if(this.mc.currentScreen != null || e.type != ElementType.CROSSHAIRS || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
 			return;
 		ItemStack toCheck = null;
 		if(this.mc.thePlayer.getHeldItem() != null)
@@ -87,6 +87,20 @@ public class RenderTickHandler {
 		if(e.dwheel != 0){
 			e.setCanceled(true);
 			this.recipeIndex += Math.signum(e.dwheel);
+			if(this.recipeIndex < 0)
+				this.recipeIndex = this.lastRecipes.size()-1;
+			else if(this.recipeIndex >= this.lastRecipes.size())
+				this.recipeIndex = 0;
+		}
+	}
+
+	@SubscribeEvent
+	public void onMouseInput2(final MouseInputEvent e){
+		if(this.lastRecipes.isEmpty() || this.lastRecipes.get(0).getWrappedRecipe() instanceof RecipeNotFound || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+			return;
+		if(Mouse.getEventDWheel() != 0){
+			e.setCanceled(true);
+			this.recipeIndex += Math.signum(Mouse.getEventDWheel());
 			if(this.recipeIndex < 0)
 				this.recipeIndex = this.lastRecipes.size()-1;
 			else if(this.recipeIndex >= this.lastRecipes.size())
@@ -141,7 +155,6 @@ public class RenderTickHandler {
 
 	private void checkLastItem(final ItemStack toCheck){
 		if(this.lastStack != null && !toCheck.isItemEqual(this.lastStack)){
-			LogHelper.info("resetting index");
 			this.itemIndex = 0;
 			this.recipeIndex = 0;
 			Collections.sort(this.lastRecipes, new CraftingRecipeMetaComparator(toCheck.getItemDamage()));

@@ -1,6 +1,5 @@
 package me.superckl.recipetooltips.recipe;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -10,7 +9,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.superckl.recipetooltips.util.CraftingGridHelper;
 import me.superckl.recipetooltips.util.ItemStackHelper;
-import me.superckl.recipetooltips.util.LogHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -34,7 +32,6 @@ public class CraftingRecipeWrapper extends RecipeWrapper{
 		if(recipe instanceof ShapedRecipes){
 			final ShapedRecipes sRecipe = (ShapedRecipes) recipe;
 			final List<RecipeMultiItemStack> items = Lists.newArrayList();
-			LogHelper.info(Arrays.toString(sRecipe.recipeItems));
 			int index = 0;
 			for(int row = 0; row < 3; row++)
 				for(int column = 0; column < 3; column++)
@@ -85,7 +82,6 @@ public class CraftingRecipeWrapper extends RecipeWrapper{
 			height = width = 3;
 			ingredients = items.toArray(new RecipeMultiItemStack[items.size()]);
 		}
-		LogHelper.info(Arrays.toString(ingredients));
 		final RecipeMultiItemStack[] rStacks = new RecipeMultiItemStack[9];
 
 		int index = 0;
