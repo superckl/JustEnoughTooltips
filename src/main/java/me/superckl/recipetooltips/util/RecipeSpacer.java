@@ -17,12 +17,12 @@ public class RecipeSpacer {
 
 	public int[] next(){
 		final int[] xy = new int[] {this.column*18, this.row*18};
-		this.row++;
-		if(this.row >= this.rows){
-			this.column++;
-			this.row = 0;
+		this.column++;
+		if(this.column >= this.columns){
+			this.row++;
+			this.column = 0;
 		}
-		if(this.column >= this.columns)
+		if(this.row >= this.rows)
 			this.hasNext = false;
 		return xy;
 	}

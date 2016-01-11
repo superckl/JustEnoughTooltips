@@ -72,6 +72,8 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+	
+	rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
 task devJar(type: Jar, dependsOn: 'classes') {
@@ -90,5 +92,6 @@ artifacts {
 jar {
     manifest {
         attributes 'ModSide': 'CLIENT'
+		attributes 'FMLAT': 'recipetooltips_at.cfg'
     }
 }

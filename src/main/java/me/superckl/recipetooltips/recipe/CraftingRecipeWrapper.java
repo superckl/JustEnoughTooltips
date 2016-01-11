@@ -1,5 +1,6 @@
 package me.superckl.recipetooltips.recipe;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.superckl.recipetooltips.util.CraftingGridHelper;
 import me.superckl.recipetooltips.util.ItemStackHelper;
+import me.superckl.recipetooltips.util.LogHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -18,76 +20,87 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class CraftingRecipeWrapper {
+public class CraftingRecipeWrapper extends RecipeWrapper{
 
 	private final int dimension;
-	private final RecipeItemStack[] ingredients;
-	private final ItemStack output;
+	private final RecipeMultiItemStack[] ingredients;
+	private final RecipeMultiItemStack output;
 	private final IRecipe wrappedRecipe;
 
 	public static CraftingRecipeWrapper fromRecipe(final IRecipe recipe){
-		//TODO dye recipes not complete
 		final int dimension = CraftingGridHelper.getWidthHeight(recipe.getRecipeSize());
-		RecipeItemStack[] ingredients = new RecipeItemStack[0];
+		int height = dimension, width = dimension;
+		RecipeMultiItemStack[] ingredients = new RecipeMultiItemStack[0];
 		if(recipe instanceof ShapedRecipes){
-			ingredients = ItemStackHelper.fromItemStacks(((ShapedRecipes)recipe).recipeItems);
-
-			final List<RecipeItemStack> items = Lists.newArrayList();
 			final ShapedRecipes sRecipe = (ShapedRecipes) recipe;
-			final ItemStack[] input = sRecipe.recipeItems;
+			final List<RecipeMultiItemStack> items = Lists.newArrayList();
+			LogHelper.info(Arrays.toString(sRecipe.recipeItems));
 			int index = 0;
 			for(int row = 0; row < 3; row++)
 				for(int column = 0; column < 3; column++)
-					if(column < dimension && row < dimension && index < input.length)
-						items.add(RecipeItemStack.fromOreDict(input[index++]));
+					if(column < sRecipe.recipeWidth && row < sRecipe.recipeHeight && index < sRecipe.recipeItems.length)
+						items.add(RecipeMultiItemStack.fromOreDict(sRecipe.recipeItems[index++]));
 					else
 						items.add(null);
-			ingredients = items.toArray(new RecipeItemStack[items.size()]);
+			height = 3;
+			width = 3;
+			ingredients = items.toArray(new RecipeMultiItemStack[items.size()]);
 		}else if(recipe instanceof ShapelessRecipes)
-			ingredients = ItemStackHelper.fromItemStacks(((ShapelessRecipes) recipe).recipeItems.toArray(new ItemStack[dimension*dimension]));
+			ingredients = ItemStackHelper.fromItemStacks(((ShapelessRecipes) recipe).recipeItems.toArray(new ItemStack[dimension*dimension]), true);
 		else if(recipe instanceof ShapelessOreRecipe){
-			final List<RecipeItemStack> items = Lists.newArrayList();
+			final List<RecipeMultiItemStack> items = Lists.newArrayList();
 			for(final Object obj:((ShapelessOreRecipe)recipe).getInput())
 				if(obj instanceof ItemStack)
-					items.add(RecipeItemStack.fromOreDict((ItemStack) obj));
+					items.add(RecipeMultiItemStack.fromOreDict((ItemStack) obj));
 				else if(obj instanceof List){
 					final List<ItemStack> list = (List<ItemStack>) obj;
 					if(list.isEmpty())
 						items.add(null);
 					else
-						items.add(RecipeItemStack.fromOreDict(list));
-				}
-			ingredients = items.toArray(new RecipeItemStack[items.size()]);
+						items.add(RecipeMultiItemStack.fromOreDict(list));
+				}else if(obj == null)
+					items.add(null);
+			ingredients = items.toArray(new RecipeMultiItemStack[items.size()]);
 		}else if(recipe instanceof ShapedOreRecipe){
-			final List<RecipeItemStack> items = Lists.newArrayList();
+			final List<RecipeMultiItemStack> items = Lists.newArrayList();
 			final ShapedOreRecipe sRecipe = (ShapedOreRecipe) recipe;
 			final Object[] input = sRecipe.getInput();
 			for(int row = 0; row < 3; row++)
 				for(int column = 0; column < 3; column++)
-					if(column < dimension && row < dimension && row+column*dimension < input.length){
-						final Object obj = input[row+column*dimension];
+					if(column < dimension && row < dimension && column+row*dimension < input.length){
+						final Object obj = input[column+row*dimension];
 						if(obj == null)
 							items.add(null);
 						else if(obj instanceof ItemStack)
-							items.add(RecipeItemStack.fromOreDict((ItemStack) obj));
+							items.add(RecipeMultiItemStack.fromOreDict((ItemStack) obj));
 						else if(obj instanceof List){
 							final List<ItemStack> list = (List<ItemStack>) obj;
 							if(list.isEmpty())
 								items.add(null);
 							else
-								items.add(RecipeItemStack.fromOreDict(list));
+								items.add(RecipeMultiItemStack.fromOreDict(list));
 						}
 					}else
 						items.add(null);
-			ingredients = items.toArray(new RecipeItemStack[items.size()]);
+			height = width = 3;
+			ingredients = items.toArray(new RecipeMultiItemStack[items.size()]);
 		}
+		LogHelper.info(Arrays.toString(ingredients));
+		final RecipeMultiItemStack[] rStacks = new RecipeMultiItemStack[9];
 
-		if(ingredients.length != 9){
-			final RecipeItemStack[] stacks = new RecipeItemStack[9];
-			System.arraycopy(ingredients, 0, stacks, 0, ingredients.length);
-			ingredients = stacks;
-		}
-		return new CraftingRecipeWrapper(dimension, ingredients, recipe.getRecipeOutput(), recipe);
+		int index = 0;
+		for(int row = 0; row < 3; row++)
+			for(int column = 0; column < 3; column++)
+				if(column < width && row < height && index < ingredients.length)
+					rStacks[column+row*3] = ingredients[index++];
+				else
+					rStacks[column+row*3] = null;
+
+		return new CraftingRecipeWrapper(dimension, rStacks, RecipeMultiItemStack.from(recipe.getRecipeOutput()), recipe);
+	}
+
+	public static boolean isValid(final IRecipe recipe){
+		return recipe != null && recipe.getRecipeOutput() != null && recipe.getRecipeSize() != 0;
 	}
 
 }

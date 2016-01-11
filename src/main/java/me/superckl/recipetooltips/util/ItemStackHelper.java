@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import me.superckl.recipetooltips.recipe.RecipeItemStack;
+import me.superckl.recipetooltips.recipe.RecipeMultiItemStack;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,14 +29,14 @@ public class ItemStackHelper {
 		return stacks;
 	}
 
-	public static RecipeItemStack[] fromItemStacks(final ItemStack[] stacks){
-		final RecipeItemStack[] rStacks = new RecipeItemStack[stacks.length];
+	public static RecipeMultiItemStack[] fromItemStacks(final ItemStack[] stacks, final boolean oreDict){
+		final RecipeMultiItemStack[] rStacks = new RecipeMultiItemStack[stacks.length];
 		for(int i = 0; i < stacks.length; i++)
 			if(stacks[i] == null)
 				rStacks[i] = null;
 			else
-				rStacks[i] = RecipeItemStack.from(stacks[i]);
-		return rStacks;
+				rStacks[i] = oreDict ? RecipeMultiItemStack.from(stacks[i]):RecipeMultiItemStack.fromOreDict(stacks[i]);
+				return rStacks;
 	}
 
 }
