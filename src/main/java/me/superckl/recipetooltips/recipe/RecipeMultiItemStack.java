@@ -18,6 +18,11 @@ public class RecipeMultiItemStack extends RecipeStack{
 		return this.stacks.get(index % this.stacks.size());
 	}
 
+	@Override
+	public ItemStack getPrimaryStack() {
+		return this.get(0);
+	}
+
 	public static RecipeMultiItemStack from(final ItemStack stack){
 		return RecipeMultiItemStack.from(Lists.newArrayList(stack));
 	}

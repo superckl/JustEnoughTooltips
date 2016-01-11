@@ -3,22 +3,22 @@ package me.superckl.recipetooltips.util;
 import java.util.Comparator;
 
 import lombok.RequiredArgsConstructor;
-import me.superckl.recipetooltips.recipe.CraftingRecipeWrapper;
+import me.superckl.recipetooltips.recipe.RecipeWrapper;
 import net.minecraft.item.ItemStack;
 
 @RequiredArgsConstructor
-public class CraftingRecipeMetaComparator implements Comparator<CraftingRecipeWrapper>{
+public class RecipeWrapperMetaComparator implements Comparator<RecipeWrapper>{
 
 	private final int desiredMeta;
 
-	public CraftingRecipeMetaComparator() {
+	public RecipeWrapperMetaComparator() {
 		this(-1);
 	}
 
 	@Override
-	public int compare(final CraftingRecipeWrapper o1, final CraftingRecipeWrapper o2) {
-		final ItemStack i1 = o1.getOutput().get(0);
-		final ItemStack i2 = o2.getOutput().get(0);
+	public int compare(final RecipeWrapper o1, final RecipeWrapper o2) {
+		final ItemStack i1 = o1.getOutput().getPrimaryStack();
+		final ItemStack i2 = o2.getOutput().getPrimaryStack();
 		if(this.desiredMeta >= 0)
 			if(i1.getItemDamage() == this.desiredMeta){
 				if(i1.getItemDamage() == i2.getItemDamage())
