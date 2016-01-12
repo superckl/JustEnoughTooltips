@@ -22,6 +22,8 @@ public class Config {
 	public static int yPaddingInGame;
 	public static int xPaddingInTooltip;
 	public static int yPaddingInTooltip;
+	public static float scaleInGame;
+	public static float scaleInTooltip;
 
 	public static void init(final File file){
 		if(file != null){
@@ -38,6 +40,8 @@ public class Config {
 		Config.yPaddingInGame = Config.config.getInt("In Game y Padding", Config.CATEGORY_RENDERING, 0, 0, Integer.MAX_VALUE, "This value will be added to the y position of the in-game rendering.");
 		Config.xPaddingInTooltip = Config.config.getInt("Tooltip x Padding", Config.CATEGORY_RENDERING, 0, 0, Integer.MAX_VALUE, "This value will be added to the x position of the tooltip rendering.");
 		Config.yPaddingInTooltip = Config.config.getInt("Tooltip y Padding", Config.CATEGORY_RENDERING, 0, 0, Integer.MAX_VALUE, "This value will be added to the y position of the toolitp rendering.");
+		Config.scaleInGame = Config.config.getFloat("In Game Scale", Config.CATEGORY_RENDERING, .9F, 0, Integer.MAX_VALUE, "The scale of the in-game rendering.");
+		Config.scaleInTooltip = Config.config.getFloat("Tooltip Scale", Config.CATEGORY_RENDERING, .9F, 0, Integer.MAX_VALUE, "The scale of the tooltip rendering.");
 
 		Config.config.save();
 	}

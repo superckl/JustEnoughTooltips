@@ -71,17 +71,20 @@ public class RenderHelper {
 	}
 
 	public static void outlineGuiArea(final int x, final int y, final int z, final int width, final int height, final float scale){
-		final double six = 6D/256D;
-		final double seven = 7D/256D;
-		final double thirteen = 13D/256D;
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x-6, y-6, z, 0, 0, 6, 6, 256, 256, scale);//top left
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x-6, y, z, 0, six, six, seven, 6, height, 256, 256, scale);//left
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x-6, y+height, z, 0, 7, 6, 6, 256, 256, scale);//bottom left
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x, y+height, z, six, seven, seven, thirteen, width, 6, 256, 256, scale);//bottom
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x+width, y+height, z, 7, 7, 6, 6, 256, 256, scale);//bottom right
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x+width, y, z, seven, thirteen, six, seven, 6, height, 256, 256, scale);//right
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x+width, y-6, z, 7, 0, 6, 6, 256, 256, scale);//top right
-		RenderHelper.drawTexturedRect(RenderHelper.widgets, x, y-6, z, six, seven, 0, six, width, 6, 256, 256, scale);//top
+		final double uvsix = 6D/256D;
+		final double uvseven = 7D/256D;
+		final double uvthirteen = 13D/256D;
+		final int ssix = (int) (6*scale);
+		final int sWidth = (int) (width*scale);
+		final int sHeight = (int) (height*scale);
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x-ssix, y-ssix, z, 0, 0, 6, 6, 256, 256, scale);//top left
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x-ssix, y, z, 0, uvsix, uvsix, uvseven, 6, height, 256, 256, scale);//left
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x-ssix, y+sHeight, z, 0, 7, 6, 6, 256, 256, scale);//bottom left
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x, y+sHeight, z, uvsix, uvseven, uvseven, uvthirteen, width, 6, 256, 256, scale);//bottom
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x+sWidth, y+sHeight, z, 7, 7, 6, 6, 256, 256, scale);//bottom right
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x+sWidth, y, z, uvseven, uvthirteen, uvsix, uvseven, 6, height, 256, 256, scale);//right
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x+sWidth, y-ssix, z, 7, 0, 6, 6, 256, 256, scale);//top right
+		RenderHelper.drawTexturedRect(RenderHelper.widgets, x, y-ssix, z, uvsix, uvseven, 0, uvsix, width, 6, 256, 256, scale);//top
 	}
 
 	public static void fillGuiArea(final int x, final int y, final int z, final int width, final int height, final float scale){

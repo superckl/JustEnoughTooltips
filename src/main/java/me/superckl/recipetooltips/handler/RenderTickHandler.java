@@ -68,7 +68,7 @@ public class RenderTickHandler {
 		}
 		if(toCheck == null)
 			return;
-		final float scale = 1F;
+		final float scale = Config.scaleInGame;
 		int x = Math.round(e.resolution.getScaledWidth()/2);
 		int y = e.resolution.getScaledHeight()/2+13;
 		this.checkLastItem(toCheck, x, y);
@@ -80,7 +80,7 @@ public class RenderTickHandler {
 			GlStateManager.disableLighting();
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
-			x-= width/2;
+			x-= width/2*scale;
 			if(Config.xPosInGame >= 0)
 				x = Config.xPosInGame;
 			if(Config.yPosInGame >= 0)
@@ -94,8 +94,9 @@ public class RenderTickHandler {
 			this.layout.getRecipeTransferButton().enabled = false;
 			this.layout.getRecipeTransferButton().visible = false;
 			GlStateManager.pushMatrix();
+			GlStateManager.scale(scale, scale, 1F);
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
-			GlStateManager.translate(x-this.layout.getPosX(), y-this.layout.getPosY(), 501F);
+			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
 			this.layout.draw(this.mc, 0, 0);
 			GlStateManager.popMatrix();
 		}
@@ -185,7 +186,7 @@ public class RenderTickHandler {
 		if(this.gui.isOpen())
 			return;
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
-		final float scale = 1F;
+		final float scale = Config.scaleInTooltip;
 		int x = Math.round(Mouse.getEventX() / resolution.getScaleFactor()-8);
 		int y = (this.mc.displayHeight - Mouse.getEventY()) / resolution.getScaleFactor();
 		this.checkLastItem(e.itemStack, x, y);
@@ -196,7 +197,7 @@ public class RenderTickHandler {
 			GlStateManager.disableLighting();
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
-			x -= width;
+			x -= width*scale;
 			if(Config.xPosInTooltip >= 0)
 				x = Config.xPosInTooltip;
 			if(Config.yPosInTooltip >= 0)
@@ -209,8 +210,9 @@ public class RenderTickHandler {
 			this.layout.getRecipeTransferButton().enabled = false;
 			this.layout.getRecipeTransferButton().visible = false;
 			GlStateManager.pushMatrix();
+			GlStateManager.scale(scale, scale, 1F);
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
-			GlStateManager.translate(x-this.layout.getPosX(), y-this.layout.getPosY(), 501F);
+			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
 			this.layout.draw(this.mc, 0, 0);
 			GlStateManager.popMatrix();
 		}
