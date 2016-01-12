@@ -1,14 +1,12 @@
 package me.superckl.recipetooltips.integration.jei;
 
 import lombok.Getter;
-import me.superckl.recipetooltips.util.LogHelper;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.recipe.IRecipeCategory;
 
 @Getter
 @JEIPlugin
@@ -34,9 +32,6 @@ public class JEIIntegrationModule implements IModPlugin{
 	@Override
 	public void onRecipeRegistryAvailable(final IRecipeRegistry recipeRegistry) {
 		JEIIntegrationModule.recipeRegistry = recipeRegistry;
-		for(final IRecipeCategory cat:JEIIntegrationModule.recipeRegistry.getRecipeCategories())
-			for(final Object recipe:JEIIntegrationModule.recipeRegistry.getRecipes(cat))
-				LogHelper.info(recipe.toString());
 	}
 
 }

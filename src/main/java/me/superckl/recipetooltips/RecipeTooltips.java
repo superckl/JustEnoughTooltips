@@ -32,7 +32,7 @@ public class RecipeTooltips {
 	@EventHandler
 	public void onInit(final FMLInitializationEvent e){
 		KeyBindings.DISPLAY_1 = new KeyBinding("Display 1", Keyboard.KEY_LMENU, ModData.NAME);
-		KeyBindings.NEXT_CATEGORY = new KeyBinding("Next Category", Keyboard.KEY_GRAVE, ModData.NAME);
+		KeyBindings.NEXT_CATEGORY = new KeyBinding("Next Category", Keyboard.KEY_X, ModData.NAME);
 		KeyBindings.SWITCH_USES_RECIPES = new KeyBinding("Swtich Uses & Recipes", Keyboard.KEY_Z, ModData.NAME);
 		ClientRegistry.registerKeyBinding(KeyBindings.DISPLAY_1);
 		ClientRegistry.registerKeyBinding(KeyBindings.NEXT_CATEGORY);

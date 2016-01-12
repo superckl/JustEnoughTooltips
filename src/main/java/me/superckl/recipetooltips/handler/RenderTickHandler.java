@@ -129,25 +129,16 @@ public class RenderTickHandler {
 			return;
 		final int key = Keyboard.getEventKey();
 		if(KeyBindings.NEXT_CATEGORY.getKeyCode() == key){
-			this.logic.nextRecipeCategory();
-			this.needsReset = true;
+			if(this.logic.hasMultipleCategories()){
+				this.logic.nextRecipeCategory();
+				this.needsReset = true;
+			}
 		}else if(KeyBindings.SWITCH_USES_RECIPES.getKeyCode() == key){
 			this.mode = this.mode == Mode.OUTPUT ? Mode.INPUT:Mode.OUTPUT;
 			this.needsReset = true;
 		}else if(this.mc.currentScreen == null && (mezz.jei.config.KeyBindings.showRecipe.getKeyCode() == key))
 			try {
-				if(RenderTickHandler.guiEventHandler == null){
-					RenderTickHandler.guiEventHandler = ProxyCommonClient.class.getDeclaredField("guiEventHandler");
-					RenderTickHandler.guiEventHandler.setAccessible(true);
-				}
-				if(RenderTickHandler.recipesGui == null){
-					RenderTickHandler.recipesGui = GuiEventHandler.class.getDeclaredField("recipesGui");
-					RenderTickHandler.recipesGui.setAccessible(true);
-				}
-				if(this.gui == null){
-					final Object guiEventHandler = RenderTickHandler.guiEventHandler.get(JustEnoughItems.getProxy());
-					this.gui = (RecipesGui) RenderTickHandler.recipesGui.get(guiEventHandler);
-				}
+				this.getRecipesGui();
 				if(this.lastStack != null){
 					this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer));
 					if(this.mode == Mode.OUTPUT)
@@ -156,7 +147,7 @@ public class RenderTickHandler {
 						this.gui.showUses(new Focus(this.lastStack));
 				}
 			} catch (final Exception e1) {
-				LogHelper.info("An error occurred when opening the recipes gui!");
+				LogHelper.error("An error occurred when opening the recipes gui!");
 				e1.printStackTrace();
 			}
 	}
@@ -169,7 +160,17 @@ public class RenderTickHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRenderTooltip(final ItemTooltipEvent e){
-		if((this.mc.currentScreen != null && this.mc.currentScreen instanceof RecipesGui) || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
+		if(e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
+			return;
+		if(this.gui == null)
+			try{
+				this.getRecipesGui();
+			}catch (final Exception e1){
+				LogHelper.error("An error occurred while getting the recipes gui!");
+				e1.printStackTrace();
+				return;
+			}
+		if(this.gui.isOpen())
 			return;
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
 		final float scale = 1F;
@@ -217,14 +218,27 @@ public class RenderTickHandler {
 				return;
 			this.tempMode = this.mode;
 			this.mode = this.mode == Mode.INPUT ? Mode.OUTPUT:Mode.INPUT;
-			LogHelper.info("recurssing");
 			this.resetGuiLogic(toCheck, x, y);
-			LogHelper.info(this.layout);
 			return;
 		}
 		this.logic.setRecipesPerPage(1);
 		final List<RecipeLayout> layouts = this.logic.getRecipeWidgets(x, y, 0);
 		this.layout = layouts.isEmpty() ? null:layouts.get(0);
+	}
+
+	private void getRecipesGui() throws Exception{
+		if(RenderTickHandler.guiEventHandler == null){
+			RenderTickHandler.guiEventHandler = ProxyCommonClient.class.getDeclaredField("guiEventHandler");
+			RenderTickHandler.guiEventHandler.setAccessible(true);
+		}
+		if(RenderTickHandler.recipesGui == null){
+			RenderTickHandler.recipesGui = GuiEventHandler.class.getDeclaredField("recipesGui");
+			RenderTickHandler.recipesGui.setAccessible(true);
+		}
+		if(this.gui == null){
+			final Object guiEventHandler = RenderTickHandler.guiEventHandler.get(JustEnoughItems.getProxy());
+			this.gui = (RecipesGui) RenderTickHandler.recipesGui.get(guiEventHandler);
+		}
 	}
 
 }
