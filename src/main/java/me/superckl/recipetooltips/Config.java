@@ -3,7 +3,6 @@ package me.superckl.recipetooltips;
 import java.io.File;
 
 import me.superckl.recipetooltips.reference.ModData;
-import me.superckl.recipetooltips.util.LogHelper;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -29,7 +28,6 @@ public class Config {
 			final Configuration config = new Configuration(file);
 			Config.config = config;
 		}
-		//Config.config.load();
 		Config.renderInGame = Config.config.getBoolean("In World", Config.CATEGORY_RENDERING, true, "If false, RecipeTooltips will not render recipes below the crosshair.");
 		Config.renderInTooltips = Config.config.getBoolean("In Tooltips", Config.CATEGORY_RENDERING, true, "If false, RecipeTooltips will not render recipes in tooltips.");
 		Config.xPosInGame = Config.config.getInt("In Game x Position", Config.CATEGORY_RENDERING, -1, -1, Integer.MAX_VALUE, "If greater than 0, this value will override the default x position of the in-game rendering.");
