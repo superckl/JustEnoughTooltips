@@ -125,6 +125,8 @@ public class RenderTickHandler {
 
 	@SubscribeEvent//not fired when in GUI
 	public void onKeyPress(final KeyInputEvent e){
+		if(!Keyboard.getEventKeyState())
+			return;
 		if(this.layout == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
 		final int key = Keyboard.getEventKey();
@@ -154,8 +156,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent //fired while in GUI, but isPressed returns false
 	public void onKeyPress2(final KeyboardInputEvent.Pre e){
-		if(Keyboard.getEventKeyState())
-			this.onKeyPress(new KeyInputEvent());
+		this.onKeyPress(new KeyInputEvent());
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
