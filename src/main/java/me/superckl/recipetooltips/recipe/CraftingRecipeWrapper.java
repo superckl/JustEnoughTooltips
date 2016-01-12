@@ -104,7 +104,7 @@ public class CraftingRecipeWrapper extends RecipeWrapper{
 	}
 
 	public static boolean isValid(final IRecipe recipe){
-		return recipe != null && recipe.getRecipeOutput() != null && recipe.getRecipeSize() != 0;
+		return recipe != null && recipe.getRecipeOutput() != null && recipe.getRecipeSize() != 0 && (recipe instanceof ShapedRecipes || recipe instanceof ShapelessRecipes || recipe instanceof ShapedOreRecipe || recipe instanceof ShapelessOreRecipe);
 	}
 
 	@Override

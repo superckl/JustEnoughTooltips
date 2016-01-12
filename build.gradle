@@ -18,6 +18,12 @@ apply plugin: 'maven'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+repositories {
+  maven {
+    url "http://dvs1.progwml6.com/files/maven"
+  }
+}
+
 sourceSets.main{
     java{
         srcDirs = ['src/main/java']
@@ -40,6 +46,8 @@ group= "me.superckl.recipetooltips"
 archivesBaseName = "RecipeTooltips"
 
 minecraft {
+    useDepAts = true
+
     version = config.minecraft_version + "-" + config.forge_version
     mappings = "snapshot_20160109"
 
@@ -53,6 +61,7 @@ version = "${config.minecraft_version}-${config.mod_version}.${System.getenv("BU
 
 dependencies {
     compile "org.projectlombok:lombok:1.16.6"
+	deobfCompile "mezz.jei:jei_1.8.9:2.16.1.77"
 }
 
 processResources
