@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = ModData.MOD_ID, name = ModData.NAME, version = ModData.VERSION, acceptableRemoteVersions = "*", dependencies = "required-after:JEI")
+@Mod(modid = ModData.MOD_ID, name = ModData.NAME, version = ModData.VERSION, acceptableRemoteVersions = "*", guiFactory = "me.superckl.recipetooltips.gui.RecipeTooltipsGuiFactory", dependencies = "required-after:JEI@[2.16.2.78,)")
 public class RecipeTooltips {
 
 	@Instance(ModData.MOD_ID)
@@ -25,6 +25,7 @@ public class RecipeTooltips {
 
 	@EventHandler
 	public void onPreInit(final FMLPreInitializationEvent e){
+		Config.init(e.getSuggestedConfigurationFile());
 		//this.integrationHandler = new IntegrationHandler();
 		//this.integrationHandler.preInit();
 	}
@@ -38,6 +39,7 @@ public class RecipeTooltips {
 		ClientRegistry.registerKeyBinding(KeyBindings.NEXT_CATEGORY);
 		ClientRegistry.registerKeyBinding(KeyBindings.SWITCH_USES_RECIPES);
 		MinecraftForge.EVENT_BUS.register(new RenderTickHandler());
+		MinecraftForge.EVENT_BUS.register(new Config());
 	}
 
 }

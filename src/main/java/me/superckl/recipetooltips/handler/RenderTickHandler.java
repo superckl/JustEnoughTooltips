@@ -6,6 +6,7 @@ import java.util.List;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import me.superckl.recipetooltips.Config;
 import me.superckl.recipetooltips.KeyBindings;
 import me.superckl.recipetooltips.util.LogHelper;
 import me.superckl.recipetooltips.util.RenderHelper;
@@ -52,7 +53,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderGameOverlayEvent.Pre e){
-		if(this.mc.currentScreen != null || e.type != ElementType.CROSSHAIRS || !KeyBindings.DISPLAY_1.isKeyDown())
+		if(!Config.renderInGame || this.mc.currentScreen != null || e.type != ElementType.CROSSHAIRS || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
 		ItemStack toCheck = null;
 		if(this.mc.thePlayer.getHeldItem() != null)
@@ -68,25 +69,33 @@ public class RenderTickHandler {
 		if(toCheck == null)
 			return;
 		final float scale = 1F;
-		final int x = Math.round(e.resolution.getScaledWidth()/2);
-		final int y = e.resolution.getScaledHeight()/2+13;
+		int x = Math.round(e.resolution.getScaledWidth()/2);
+		int y = e.resolution.getScaledHeight()/2+13;
 		this.checkLastItem(toCheck, x, y);
 		if(this.layout != null){
 			final int width = this.logic.getRecipeCategory().getBackground().getWidth();
-			int height = this.logic.getRecipeCategory().getBackground().getHeight();
+			final int height = this.logic.getRecipeCategory().getBackground().getHeight();
 			GlStateManager.pushMatrix();
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
-			RenderHelper.outlineGuiArea(x-(width)/2, y, 500, width, height, scale);
+			x-= width/2;
+			if(Config.xPosInGame >= 0)
+				x = Config.xPosInGame;
+			if(Config.yPosInGame >= 0)
+				y = Config.yPosInGame;
+			x += Config.xPaddingInGame;
+			y += Config.yPaddingInGame;
+			RenderHelper.outlineGuiArea(x, y, 500, width, height, scale);
 			RenderHelper.fillGuiArea(x, y, 500, width, height, scale);
 			GlStateManager.popMatrix();
 
 			this.layout.getRecipeTransferButton().enabled = false;
 			this.layout.getRecipeTransferButton().visible = false;
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(-width/2F+(x-this.layout.getPosX()), y-this.layout.getPosY(), 501F);
+			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
+			GlStateManager.translate(x-this.layout.getPosX(), y-this.layout.getPosY(), 501F);
 			this.layout.draw(this.mc, 0, 0);
 			GlStateManager.popMatrix();
 		}
@@ -163,7 +172,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRenderTooltip(final ItemTooltipEvent e){
-		if(e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
+		if(!Config.renderInTooltips || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
 		if(this.gui == null)
 			try{
@@ -177,8 +186,8 @@ public class RenderTickHandler {
 			return;
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
 		final float scale = 1F;
-		final int x = Math.round(Mouse.getEventX() / resolution.getScaleFactor()-8);
-		final int y = (this.mc.displayHeight - Mouse.getEventY()) / resolution.getScaleFactor();
+		int x = Math.round(Mouse.getEventX() / resolution.getScaleFactor()-8);
+		int y = (this.mc.displayHeight - Mouse.getEventY()) / resolution.getScaleFactor();
 		this.checkLastItem(e.itemStack, x, y);
 		if(this.layout != null){
 			final int width = this.logic.getRecipeCategory().getBackground().getWidth();
@@ -187,13 +196,21 @@ public class RenderTickHandler {
 			GlStateManager.disableLighting();
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
-			RenderHelper.outlineGuiArea(x-(width), y, 500, width, this.logic.getRecipeCategory().getBackground().getHeight(), scale);
+			x -= width;
+			if(Config.xPosInTooltip >= 0)
+				x = Config.xPosInTooltip;
+			if(Config.yPosInTooltip >= 0)
+				y = Config.yPosInTooltip;
+			x += Config.xPaddingInTooltip;
+			y += Config.yPaddingInTooltip;
+			RenderHelper.outlineGuiArea(x, y, 500, width, this.logic.getRecipeCategory().getBackground().getHeight(), scale);
 			GlStateManager.popMatrix();
 
 			this.layout.getRecipeTransferButton().enabled = false;
 			this.layout.getRecipeTransferButton().visible = false;
 			GlStateManager.pushMatrix();
-			GlStateManager.translate((x-this.layout.getPosX())-width, (y-this.layout.getPosY()), 501F);
+			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
+			GlStateManager.translate(x-this.layout.getPosX(), y-this.layout.getPosY(), 501F);
 			this.layout.draw(this.mc, 0, 0);
 			GlStateManager.popMatrix();
 		}
