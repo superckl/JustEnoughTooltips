@@ -3,6 +3,7 @@ package me.superckl.recipetooltips.handler;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import me.superckl.recipetooltips.KeyBindings;
@@ -25,6 +26,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -107,7 +109,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void onMouseInput2(final MouseInputEvent e){
-		if(this.layout == null || !KeyBindings.DISPLAY_1.isKeyDown())
+		if(this.layout == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
 		if(Mouse.getEventDWheel() != 0){
 			e.setCanceled(true);
@@ -121,17 +123,18 @@ public class RenderTickHandler {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent//not fired when in GUI
 	public void onKeyPress(final KeyInputEvent e){
-		if(this.layout == null || !KeyBindings.DISPLAY_1.isKeyDown())
+		if(this.layout == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
-		if(KeyBindings.NEXT_CATEGORY.isPressed()){
+		final int key = Keyboard.getEventKey();
+		if(KeyBindings.NEXT_CATEGORY.getKeyCode() == key){
 			this.logic.nextRecipeCategory();
 			this.needsReset = true;
-		}else if(KeyBindings.SWITCH_USES_RECIPES.isPressed()){
+		}else if(KeyBindings.SWITCH_USES_RECIPES.getKeyCode() == key){
 			this.mode = this.mode == Mode.OUTPUT ? Mode.INPUT:Mode.OUTPUT;
 			this.needsReset = true;
-		}else if(this.mc.currentScreen == null && (mezz.jei.config.KeyBindings.showRecipe.isKeyDown()))
+		}else if(this.mc.currentScreen == null && (mezz.jei.config.KeyBindings.showRecipe.getKeyCode() == key))
 			try {
 				if(RenderTickHandler.guiEventHandler == null){
 					RenderTickHandler.guiEventHandler = ProxyCommonClient.class.getDeclaredField("guiEventHandler");
@@ -158,9 +161,15 @@ public class RenderTickHandler {
 			}
 	}
 
+	@SubscribeEvent //fired while in GUI, but isPressed returns false
+	public void onKeyPress2(final KeyboardInputEvent.Pre e){
+		if(Keyboard.getEventKeyState())
+			this.onKeyPress(new KeyInputEvent());
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRenderTooltip(final ItemTooltipEvent e){
-		if(e.itemStack == null || !KeyBindings.DISPLAY_1.isKeyDown())
+		if((this.mc.currentScreen != null && this.mc.currentScreen instanceof RecipesGui) || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
 		final float scale = 1F;
@@ -191,9 +200,12 @@ public class RenderTickHandler {
 		final boolean changedStacks = (this.lastStack != null && !toCheck.isItemEqual(this.lastStack));
 		if(changedStacks)
 			this.mode = Mode.OUTPUT;
+		this.tempMode = this.mode;
 		if(this.needsReset || changedStacks || this.lastStack == null)
 			this.resetGuiLogic(toCheck, x, y);
 	}
+
+	private Mode tempMode;
 
 	private void resetGuiLogic(final ItemStack toCheck, final int x, final int y){
 		this.needsReset = false;
@@ -201,6 +213,13 @@ public class RenderTickHandler {
 		focus.setMode(this.mode);
 		if(!this.logic.setFocus(focus)){
 			this.layout = null;
+			if(this.tempMode != this.mode)
+				return;
+			this.tempMode = this.mode;
+			this.mode = this.mode == Mode.INPUT ? Mode.OUTPUT:Mode.INPUT;
+			LogHelper.info("recurssing");
+			this.resetGuiLogic(toCheck, x, y);
+			LogHelper.info(this.layout);
 			return;
 		}
 		this.logic.setRecipesPerPage(1);
