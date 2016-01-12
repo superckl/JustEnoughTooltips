@@ -83,5 +83,9 @@ public class RenderHelper {
 		RenderHelper.drawTexturedRect(RenderHelper.widgets, x+width, y-6, z, 7, 0, 6, 6, 256, 256, scale);//top right
 		RenderHelper.drawTexturedRect(RenderHelper.widgets, x, y-6, z, six, seven, 0, six, width, 6, 256, 256, scale);//top
 	}
+	
+	public static void fillGuiArea(int x, int y, int z, final int width, final int height, final float scale){
+		RenderHelper.drawTexturedRect(widgets, x, y, z, 6, 7, 6, 7, width, height, 256, 256, scale);
+	}
 
 }

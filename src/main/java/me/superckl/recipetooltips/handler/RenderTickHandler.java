@@ -73,12 +73,14 @@ public class RenderTickHandler {
 		this.checkLastItem(toCheck, x, y);
 		if(this.layout != null){
 			final int width = this.logic.getRecipeCategory().getBackground().getWidth();
+			int height = this.logic.getRecipeCategory().getBackground().getHeight();
 			GlStateManager.pushMatrix();
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
-			RenderHelper.outlineGuiArea(x-(width)/2, y, 500, width, this.logic.getRecipeCategory().getBackground().getHeight(), scale);
+			RenderHelper.outlineGuiArea(x-(width)/2, y, 500, width, height, scale);
+			RenderHelper.fillGuiArea(x, y, 500, width, height, scale);
 			GlStateManager.popMatrix();
 
 			this.layout.getRecipeTransferButton().enabled = false;
