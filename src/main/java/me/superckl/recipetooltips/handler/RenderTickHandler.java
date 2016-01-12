@@ -1,19 +1,26 @@
 package me.superckl.recipetooltips.handler;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.lwjgl.input.Mouse;
 
 import me.superckl.recipetooltips.KeyBindings;
+import me.superckl.recipetooltips.util.LogHelper;
 import me.superckl.recipetooltips.util.RenderHelper;
+import mezz.jei.GuiEventHandler;
+import mezz.jei.JustEnoughItems;
+import mezz.jei.ProxyCommonClient;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.Focus.Mode;
 import mezz.jei.gui.IRecipeGuiLogic;
 import mezz.jei.gui.RecipeGuiLogic;
 import mezz.jei.gui.RecipeLayout;
+import mezz.jei.gui.RecipesGui;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
@@ -30,8 +37,13 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 
 public class RenderTickHandler {
 
+	public static Field recipesGui;
+	public static Field guiEventHandler;
+
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
 	private final IRecipeGuiLogic logic = new RecipeGuiLogic();
+	private RecipesGui gui;
+	private Mode mode = Mode.OUTPUT;
 	private ItemStack lastStack;
 	private RecipeLayout layout;
 	private boolean needsReset;
@@ -70,7 +82,7 @@ public class RenderTickHandler {
 			this.layout.getRecipeTransferButton().enabled = false;
 			this.layout.getRecipeTransferButton().visible = false;
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(-width/2F, 0, 501F);
+			GlStateManager.translate(-width/2F+(x-this.layout.getPosX()), y-this.layout.getPosY(), 501F);
 			this.layout.draw(this.mc, 0, 0);
 			GlStateManager.popMatrix();
 		}
@@ -116,7 +128,34 @@ public class RenderTickHandler {
 		if(KeyBindings.NEXT_CATEGORY.isPressed()){
 			this.logic.nextRecipeCategory();
 			this.needsReset = true;
-		}
+		}else if(KeyBindings.SWITCH_USES_RECIPES.isPressed()){
+			this.mode = this.mode == Mode.OUTPUT ? Mode.INPUT:Mode.OUTPUT;
+			this.needsReset = true;
+		}else if(this.mc.currentScreen == null && (mezz.jei.config.KeyBindings.showRecipe.isKeyDown()))
+			try {
+				if(RenderTickHandler.guiEventHandler == null){
+					RenderTickHandler.guiEventHandler = ProxyCommonClient.class.getDeclaredField("guiEventHandler");
+					RenderTickHandler.guiEventHandler.setAccessible(true);
+				}
+				if(RenderTickHandler.recipesGui == null){
+					RenderTickHandler.recipesGui = GuiEventHandler.class.getDeclaredField("recipesGui");
+					RenderTickHandler.recipesGui.setAccessible(true);
+				}
+				if(this.gui == null){
+					final Object guiEventHandler = RenderTickHandler.guiEventHandler.get(JustEnoughItems.getProxy());
+					this.gui = (RecipesGui) RenderTickHandler.recipesGui.get(guiEventHandler);
+				}
+				if(this.lastStack != null){
+					this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer));
+					if(this.mode == Mode.OUTPUT)
+						this.gui.showRecipes(new Focus(this.lastStack));
+					else
+						this.gui.showUses(new Focus(this.lastStack));
+				}
+			} catch (final Exception e1) {
+				LogHelper.info("An error occurred when opening the recipes gui!");
+				e1.printStackTrace();
+			}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -149,14 +188,17 @@ public class RenderTickHandler {
 	}
 
 	private void checkLastItem(final ItemStack toCheck, final int x, final int y){
-		if(this.needsReset || (this.lastStack != null && !toCheck.isItemEqual(this.lastStack)) || this.lastStack == null)
+		final boolean changedStacks = (this.lastStack != null && !toCheck.isItemEqual(this.lastStack));
+		if(changedStacks)
+			this.mode = Mode.OUTPUT;
+		if(this.needsReset || changedStacks || this.lastStack == null)
 			this.resetGuiLogic(toCheck, x, y);
 	}
 
 	private void resetGuiLogic(final ItemStack toCheck, final int x, final int y){
 		this.needsReset = false;
 		final Focus focus = new Focus(toCheck);
-		focus.setMode(Mode.OUTPUT);
+		focus.setMode(this.mode);
 		if(!this.logic.setFocus(focus)){
 			this.layout = null;
 			return;
