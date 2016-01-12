@@ -36,10 +36,10 @@ public class Config {
 		Config.yPosInGame = Config.config.getInt("In Game y Position", Config.CATEGORY_RENDERING, -1, -1, Integer.MAX_VALUE, "If greater than 0, this value will override the default y position of the in-game rendering.");
 		Config.xPosInTooltip = Config.config.getInt("Tooltip x Position", Config.CATEGORY_RENDERING, -1, -1, Integer.MAX_VALUE, "If greater than 0, this value will override the default x position of the tooltip rendering.");
 		Config.yPosInTooltip = Config.config.getInt("Tooltip y Position", Config.CATEGORY_RENDERING, -1, -1, Integer.MAX_VALUE, "If greater than 0, this value will override the default y position of the toolitp rendering.");
-		Config.xPaddingInGame = Config.config.getInt("In Game x Padding", Config.CATEGORY_RENDERING, 0, 0, Integer.MAX_VALUE, "This value will be added to the x position of the in-game rendering.");
-		Config.yPaddingInGame = Config.config.getInt("In Game y Padding", Config.CATEGORY_RENDERING, 0, 0, Integer.MAX_VALUE, "This value will be added to the y position of the in-game rendering.");
-		Config.xPaddingInTooltip = Config.config.getInt("Tooltip x Padding", Config.CATEGORY_RENDERING, 0, 0, Integer.MAX_VALUE, "This value will be added to the x position of the tooltip rendering.");
-		Config.yPaddingInTooltip = Config.config.getInt("Tooltip y Padding", Config.CATEGORY_RENDERING, 0, 0, Integer.MAX_VALUE, "This value will be added to the y position of the toolitp rendering.");
+		Config.xPaddingInGame = Config.config.getInt("In Game x Padding", Config.CATEGORY_RENDERING, 0, Integer.MIN_VALUE, Integer.MAX_VALUE, "This value will be added to the x position of the in-game rendering.");
+		Config.yPaddingInGame = Config.config.getInt("In Game y Padding", Config.CATEGORY_RENDERING, 0, Integer.MIN_VALUE, Integer.MAX_VALUE, "This value will be added to the y position of the in-game rendering.");
+		Config.xPaddingInTooltip = Config.config.getInt("Tooltip x Padding", Config.CATEGORY_RENDERING, 0, Integer.MIN_VALUE, Integer.MAX_VALUE, "This value will be added to the x position of the tooltip rendering.");
+		Config.yPaddingInTooltip = Config.config.getInt("Tooltip y Padding", Config.CATEGORY_RENDERING, 0, Integer.MIN_VALUE, Integer.MAX_VALUE, "This value will be added to the y position of the toolitp rendering.");
 		Config.scaleInGame = Config.config.getFloat("In Game Scale", Config.CATEGORY_RENDERING, .9F, 0, Integer.MAX_VALUE, "The scale of the in-game rendering.");
 		Config.scaleInTooltip = Config.config.getFloat("Tooltip Scale", Config.CATEGORY_RENDERING, .9F, 0, Integer.MAX_VALUE, "The scale of the tooltip rendering.");
 
