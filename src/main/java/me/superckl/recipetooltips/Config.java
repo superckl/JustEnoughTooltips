@@ -46,11 +46,8 @@ public class Config {
 
 	@SubscribeEvent
 	public void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent e){
-		LogHelper.info("called "+e.modID);
-		if(e.modID.equals(ModData.MOD_ID)){
-			LogHelper.info("reloading");
+		if(e.modID.equals(ModData.MOD_ID))
 			Config.init(null);
-		}
 	}
 
 }
