@@ -2,10 +2,9 @@ package me.superckl.recipetooltips.handler;
 
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import me.superckl.recipetooltips.util.LogHelper;
+import me.superckl.recipetooltips.KeyBindings;
 import me.superckl.recipetooltips.util.RenderHelper;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.Focus.Mode;
@@ -27,6 +26,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 
 public class RenderTickHandler {
 
@@ -38,7 +38,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderGameOverlayEvent.Pre e){
-		if(this.mc.currentScreen != null || e.type != ElementType.CROSSHAIRS || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+		if(this.mc.currentScreen != null || e.type != ElementType.CROSSHAIRS || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
 		ItemStack toCheck = null;
 		if(this.mc.thePlayer.getHeldItem() != null)
@@ -79,7 +79,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void onMouseInput(final MouseEvent e){
-		if(this.layout == null || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+		if(this.layout == null || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
 		if(e.dwheel != 0){
 			e.setCanceled(true);
@@ -95,7 +95,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void onMouseInput2(final MouseInputEvent e){
-		if(this.layout == null || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+		if(this.layout == null || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
 		if(Mouse.getEventDWheel() != 0){
 			e.setCanceled(true);
@@ -109,9 +109,19 @@ public class RenderTickHandler {
 		}
 	}
 
+	@SubscribeEvent
+	public void onKeyPress(final KeyInputEvent e){
+		if(this.layout == null || !KeyBindings.DISPLAY_1.isKeyDown())
+			return;
+		if(KeyBindings.NEXT_CATEGORY.isPressed()){
+			this.logic.nextRecipeCategory();
+			this.needsReset = true;
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRenderTooltip(final ItemTooltipEvent e){
-		if(e.itemStack == null || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+		if(e.itemStack == null || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
 		final float scale = 1F;
@@ -152,7 +162,6 @@ public class RenderTickHandler {
 			return;
 		}
 		this.logic.setRecipesPerPage(1);
-		LogHelper.info(this.logic.hasMultiplePages());
 		final List<RecipeLayout> layouts = this.logic.getRecipeWidgets(x, y, 0);
 		this.layout = layouts.isEmpty() ? null:layouts.get(0);
 	}

@@ -1,9 +1,12 @@
 package me.superckl.recipetooltips;
 
+import org.lwjgl.input.Keyboard;
+
 import me.superckl.recipetooltips.handler.RenderTickHandler;
-import me.superckl.recipetooltips.integration.IntegrationHandler;
 import me.superckl.recipetooltips.reference.ModData;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -26,6 +29,10 @@ public class RecipeTooltips {
 
 	@EventHandler
 	public void onInit(final FMLInitializationEvent e){
+		KeyBindings.DISPLAY_1 = new KeyBinding("Display 1", Keyboard.KEY_LMENU, ModData.NAME);
+		KeyBindings.NEXT_CATEGORY = new KeyBinding("Next Category", Keyboard.KEY_GRAVE, ModData.NAME);
+		ClientRegistry.registerKeyBinding(KeyBindings.DISPLAY_1);
+		ClientRegistry.registerKeyBinding(KeyBindings.NEXT_CATEGORY);
 		MinecraftForge.EVENT_BUS.register(new RenderTickHandler());
 	}
 

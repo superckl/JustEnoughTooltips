@@ -62,7 +62,7 @@ public class VanillaRecipeRegistryAdapter extends RecipeRegistryAdapter{
 			if(FurnaceRecipeWrapper.isValid(entry.getKey(), entry.getValue()))
 				this.recipes.add(new FurnaceRecipeWrapper(RecipeMultiItemStack.fromOreDict(entry.getKey()), RecipeMultiItemStack.fromOreDict(entry.getValue())));
 	}
-	
+
 	/*private void findRecipes(final ItemStack toCheck){
 	if(!this.recipes.isEmpty())
 		if(toCheck.getItem() != this.recipes.get(0).getOutput().getPrimaryStack().getItem()){
