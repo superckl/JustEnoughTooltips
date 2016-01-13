@@ -2,16 +2,16 @@
 {
   "modid": "RecipeTooltips",
   "name": "RecipeTooltips",
-  "description": "Helps to quickly view and find recipes for items.",
+  "description": "Quickly find and view recipes for items and blocks.",
   "version": "${mod_version}",
   "mcversion": "${minecraft_version}",
-  "url": "",
+  "url": "http://minecraft.curseforge.com/projects/recipetooltips",
   "updateUrl": "",
   "authorList": [
     "superckl"
   ],
-  "credits": "",
-  "logoFile": "",
+  "credits": "Logo by willthgreat",
+  "logoFile": "logo.png",
   "screenshots": [
   ],
   "parent":"",
