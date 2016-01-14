@@ -56,7 +56,7 @@ public class RenderTickHandler {
 		if(!Config.renderInGame || this.mc.currentScreen != null || e.type != ElementType.CROSSHAIRS || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
 		ItemStack toCheck = null;
-		if(this.mc.thePlayer.getHeldItem() != null)
+		if(!this.mc.thePlayer.isSneaking() && this.mc.thePlayer.getHeldItem() != null)
 			toCheck = this.mc.thePlayer.getHeldItem();
 		else{
 			final MovingObjectPosition pos = this.mc.getRenderViewEntity().rayTrace(this.mc.playerController.getBlockReachDistance(), 1.0F);
