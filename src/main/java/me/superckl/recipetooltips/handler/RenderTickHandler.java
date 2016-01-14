@@ -19,6 +19,7 @@ import mezz.jei.gui.IRecipeGuiLogic;
 import mezz.jei.gui.RecipeGuiLogic;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.RecipesGui;
+import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -73,8 +74,10 @@ public class RenderTickHandler {
 		int y = e.resolution.getScaledHeight()/2+13;
 		this.checkLastItem(toCheck, x, y);
 		if(this.layout != null){
-			final int width = this.logic.getRecipeCategory().getBackground().getWidth();
+			int width = this.logic.getRecipeCategory().getBackground().getWidth();
 			final int height = this.logic.getRecipeCategory().getBackground().getHeight();
+			if(this.layout.getRecipeWrapper() instanceof SmeltingRecipe)
+				width += 8;
 			GlStateManager.pushMatrix();
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
@@ -191,7 +194,10 @@ public class RenderTickHandler {
 		int y = (this.mc.displayHeight - Mouse.getEventY()) / resolution.getScaleFactor();
 		this.checkLastItem(e.itemStack, x, y);
 		if(this.layout != null){
-			final int width = this.logic.getRecipeCategory().getBackground().getWidth();
+			int width = this.logic.getRecipeCategory().getBackground().getWidth();
+			final int height = this.logic.getRecipeCategory().getBackground().getHeight();
+			if(this.layout.getRecipeWrapper() instanceof SmeltingRecipe)
+				width += 8;
 			GlStateManager.pushMatrix();
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
@@ -204,7 +210,8 @@ public class RenderTickHandler {
 				y = Config.yPosInTooltip;
 			x += Config.xPaddingInTooltip;
 			y += Config.yPaddingInTooltip;
-			RenderHelper.outlineGuiArea(x, y, 500, width, this.logic.getRecipeCategory().getBackground().getHeight(), scale);
+			RenderHelper.outlineGuiArea(x, y, 500, width, height, scale);
+			RenderHelper.fillGuiArea(x, y, 500, width, height, scale);
 			GlStateManager.popMatrix();
 
 			this.layout.getRecipeTransferButton().enabled = false;
