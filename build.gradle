@@ -61,7 +61,7 @@ version = "${config.minecraft_version}-${config.mod_version}.${System.getenv("BU
 
 dependencies {
     compile "org.projectlombok:lombok:1.16.6"
-	deobfCompile "mezz.jei:jei_1.8.9:2.17.1.81"
+	deobfCompile "mezz.jei:jei_1.8.9:2.19.0.93"
 }
 
 processResources
@@ -81,7 +81,7 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-	
+
 	rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
