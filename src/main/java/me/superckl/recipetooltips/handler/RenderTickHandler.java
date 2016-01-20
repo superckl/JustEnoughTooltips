@@ -20,6 +20,7 @@ import mezz.jei.gui.RecipeGuiLogic;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
+import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -153,7 +154,7 @@ public class RenderTickHandler {
 		}else if(KeyBindings.SWITCH_USES_RECIPES.getKeyCode() == key){
 			this.mode = this.mode == Mode.OUTPUT ? Mode.INPUT:Mode.OUTPUT;
 			this.needsReset = true;
-		}else if(this.mc.currentScreen == null && (mezz.jei.config.KeyBindings.showRecipe.getKeyCode() == key))
+		}else if(this.mc.currentScreen == null && mezz.jei.config.KeyBindings.showRecipe.getKeyCode() == key){
 			try {
 				this.getRecipesGui();
 				if(this.lastStack != null){
@@ -167,6 +168,10 @@ public class RenderTickHandler {
 				LogHelper.error("An error occurred when opening the recipes gui!");
 				e1.printStackTrace();
 			}
+		}else if(this.mc.thePlayer.openContainer != null && KeyBindings.FILL_RECIPE.getKeyCode() == key){
+			if(RecipeTransferUtil.getTransferRecipeError(this.layout, this.mc.thePlayer) == null)
+				RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer);
+		}
 	}
 
 	@SubscribeEvent //fired while in GUI, but isPressed returns false

@@ -35,9 +35,11 @@ public class RecipeTooltips {
 		KeyBindings.DISPLAY_1 = new KeyBinding("Display 1", Keyboard.KEY_LMENU, ModData.NAME);
 		KeyBindings.NEXT_CATEGORY = new KeyBinding("Next Category", Keyboard.KEY_X, ModData.NAME);
 		KeyBindings.SWITCH_USES_RECIPES = new KeyBinding("Swtich Uses & Recipes", Keyboard.KEY_Z, ModData.NAME);
+		KeyBindings.FILL_RECIPE = new KeyBinding("Fill Recipe", Keyboard.KEY_F, ModData.NAME);
 		ClientRegistry.registerKeyBinding(KeyBindings.DISPLAY_1);
 		ClientRegistry.registerKeyBinding(KeyBindings.NEXT_CATEGORY);
 		ClientRegistry.registerKeyBinding(KeyBindings.SWITCH_USES_RECIPES);
+		ClientRegistry.registerKeyBinding(KeyBindings.FILL_RECIPE);
 		MinecraftForge.EVENT_BUS.register(new RenderTickHandler());
 		MinecraftForge.EVENT_BUS.register(new Config());
 	}
