@@ -23,6 +23,7 @@ import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
@@ -170,7 +171,7 @@ public class RenderTickHandler {
 			}
 		}else if(this.mc.thePlayer.openContainer != null && KeyBindings.FILL_RECIPE.getKeyCode() == key){
 			if(RecipeTransferUtil.getTransferRecipeError(this.layout, this.mc.thePlayer) == null)
-				RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer);
+				RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer, GuiScreen.isShiftKeyDown());
 		}
 	}
 
