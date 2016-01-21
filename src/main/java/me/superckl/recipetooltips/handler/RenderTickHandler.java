@@ -144,9 +144,8 @@ public class RenderTickHandler {
 
 	@SubscribeEvent//not fired when in GUI
 	public void onKeyPress(final KeyInputEvent e){
-		if(!Keyboard.getEventKeyState()){
+		if(!Keyboard.getEventKeyState())
 			return;
-		}
 		if(this.layout == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
 		final int key = Keyboard.getEventKey();
@@ -158,7 +157,7 @@ public class RenderTickHandler {
 		}else if(KeyBindings.SWITCH_USES_RECIPES.getKeyCode() == key){
 			this.mode = this.mode == Mode.OUTPUT ? Mode.INPUT:Mode.OUTPUT;
 			this.needsReset = true;
-		}else if(this.mc.currentScreen == null && mezz.jei.config.KeyBindings.showRecipe.getKeyCode() == key){
+		}else if(this.mc.currentScreen == null && mezz.jei.config.KeyBindings.showRecipe.getKeyCode() == key)
 			try {
 				this.getRecipesGui();
 				if(this.lastStack != null){
@@ -172,10 +171,9 @@ public class RenderTickHandler {
 				LogHelper.error("An error occurred when opening the recipes gui!");
 				e1.printStackTrace();
 			}
-		}else if(this.mc.thePlayer.openContainer != null && this.error == null && KeyBindings.FILL_RECIPE.getKeyCode() == key){
+		else if(this.mc.thePlayer.openContainer != null && this.error == null && KeyBindings.FILL_RECIPE.getKeyCode() == key)
 			if(this.error == null)
 				RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer, GuiScreen.isShiftKeyDown());
-		}
 	}
 
 	@SubscribeEvent //fired while in GUI, but isPressed returns false
@@ -185,9 +183,8 @@ public class RenderTickHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRenderTooltip(final ItemTooltipEvent e){
-		if(!Config.renderInTooltips || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode())){
+		if(!Config.renderInTooltips || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
-		}
 		if(this.gui == null)
 			try{
 				this.getRecipesGui();
@@ -231,9 +228,8 @@ public class RenderTickHandler {
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
 			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
 			this.layout.draw(this.mc, 0, 0);
-			if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode())){
+			if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
 				this.error.showError(this.mc, Math.round(x/scale+this.layout.getPosX()-x/scale-12),Math.round(y/scale+this.layout.getPosY()-y/scale-5), this.layout);
-			}
 			GlStateManager.popMatrix();
 		}
 		this.lastStack = e.itemStack;
