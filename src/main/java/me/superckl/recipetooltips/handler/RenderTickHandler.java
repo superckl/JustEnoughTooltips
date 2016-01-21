@@ -13,6 +13,7 @@ import me.superckl.recipetooltips.util.RenderHelper;
 import mezz.jei.GuiEventHandler;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.ProxyCommonClient;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.Focus.Mode;
 import mezz.jei.gui.IRecipeGuiLogic;
@@ -53,6 +54,7 @@ public class RenderTickHandler {
 	private ItemStack lastStack;
 	private RecipeLayout layout;
 	private boolean needsReset;
+	private IRecipeTransferError error;
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderGameOverlayEvent.Pre e){
@@ -142,8 +144,9 @@ public class RenderTickHandler {
 
 	@SubscribeEvent//not fired when in GUI
 	public void onKeyPress(final KeyInputEvent e){
-		if(!Keyboard.getEventKeyState())
+		if(!Keyboard.getEventKeyState()){
 			return;
+		}
 		if(this.layout == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
 		final int key = Keyboard.getEventKey();
@@ -169,8 +172,8 @@ public class RenderTickHandler {
 				LogHelper.error("An error occurred when opening the recipes gui!");
 				e1.printStackTrace();
 			}
-		}else if(this.mc.thePlayer.openContainer != null && KeyBindings.FILL_RECIPE.getKeyCode() == key){
-			if(RecipeTransferUtil.getTransferRecipeError(this.layout, this.mc.thePlayer) == null)
+		}else if(this.mc.thePlayer.openContainer != null && this.error == null && KeyBindings.FILL_RECIPE.getKeyCode() == key){
+			if(this.error == null)
 				RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer, GuiScreen.isShiftKeyDown());
 		}
 	}
@@ -182,8 +185,9 @@ public class RenderTickHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRenderTooltip(final ItemTooltipEvent e){
-		if(!Config.renderInTooltips || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
+		if(!Config.renderInTooltips || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode())){
 			return;
+		}
 		if(this.gui == null)
 			try{
 				this.getRecipesGui();
@@ -227,6 +231,9 @@ public class RenderTickHandler {
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
 			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
 			this.layout.draw(this.mc, 0, 0);
+			if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode())){
+				this.error.showError(this.mc, Math.round(x/scale+this.layout.getPosX()-x/scale-12),Math.round(y/scale+this.layout.getPosY()-y/scale-5), this.layout);
+			}
 			GlStateManager.popMatrix();
 		}
 		this.lastStack = e.itemStack;
@@ -249,6 +256,7 @@ public class RenderTickHandler {
 		focus.setMode(this.mode);
 		if(!this.logic.setFocus(focus)){
 			this.layout = null;
+			this.error = null;
 			if(this.tempMode != this.mode)
 				return;
 			this.tempMode = this.mode;
@@ -259,6 +267,10 @@ public class RenderTickHandler {
 		this.logic.setRecipesPerPage(1);
 		final List<RecipeLayout> layouts = this.logic.getRecipeWidgets(x, y, 0);
 		this.layout = layouts.isEmpty() ? null:layouts.get(0);
+		if(this.layout != null && this.mc.thePlayer.openContainer != null)
+			this.error = RecipeTransferUtil.getTransferRecipeError(this.layout, this.mc.thePlayer);
+		else if(this.layout == null)
+			this.error = null;
 	}
 
 	private void getRecipesGui() throws Exception{
