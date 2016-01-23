@@ -171,9 +171,8 @@ public class RenderTickHandler {
 				LogHelper.error("An error occurred when opening the recipes gui!");
 				e1.printStackTrace();
 			}
-		else if(this.mc.thePlayer.openContainer != null && this.error == null && KeyBindings.FILL_RECIPE.getKeyCode() == key)
-			if(this.error == null)
-				RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer, GuiScreen.isShiftKeyDown());
+		else if(this.mc.thePlayer != null && this.mc.thePlayer.openContainer != null && this.error == null && KeyBindings.FILL_RECIPE.getKeyCode() == key)
+			RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer, GuiScreen.isShiftKeyDown());
 	}
 
 	@SubscribeEvent //fired while in GUI, but isPressed returns false
