@@ -95,6 +95,14 @@ public class RenderTickHandler {
 				y = Config.yPosInGame;
 			x += Config.xPaddingInGame;
 			y += Config.yPaddingInGame;
+			if(y < 12)
+				y = 12;
+			else if(y + height*scale + 12*scale > e.resolution.getScaledHeight())
+				y = Math.round(e.resolution.getScaledHeight()-(height*scale+12*scale));
+			if(x < 12)
+				x = 12;
+			else if(x + width*scale + 12*scale > e.resolution.getScaledWidth())
+				x = Math.round(e.resolution.getScaledWidth()-(width*scale+12*scale));
 			RenderHelper.outlineGuiArea(x, y, 500, width, height, scale);
 			RenderHelper.fillGuiArea(x, y, 500, width, height, scale);
 			GlStateManager.popMatrix();
@@ -221,6 +229,14 @@ public class RenderTickHandler {
 				y = Config.yPosInTooltip;
 			x += Config.xPaddingInTooltip;
 			y += Config.yPaddingInTooltip;
+			if(y < 12)
+				y = 12;
+			else if(y + height*scale + 12*scale > resolution.getScaledHeight())
+				y = Math.round(resolution.getScaledHeight()-(height*scale+12*scale));
+			if(x < 12)
+				x = 12;
+			else if(x + width*scale + 12*scale > resolution.getScaledWidth())
+				x = Math.round(resolution.getScaledWidth()-(width*scale+12*scale));
 			RenderHelper.outlineGuiArea(x, y, 500, width, height, scale);
 			RenderHelper.fillGuiArea(x, y, 500, width, height, scale);
 			GlStateManager.popMatrix();
