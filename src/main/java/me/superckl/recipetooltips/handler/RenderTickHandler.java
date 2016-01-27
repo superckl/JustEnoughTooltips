@@ -9,6 +9,7 @@ import org.lwjgl.input.Mouse;
 import me.superckl.recipetooltips.Config;
 import me.superckl.recipetooltips.KeyBindings;
 import me.superckl.recipetooltips.util.LogHelper;
+import me.superckl.recipetooltips.util.RecipeDrawingException;
 import me.superckl.recipetooltips.util.RenderHelper;
 import mezz.jei.GuiEventHandler;
 import mezz.jei.JustEnoughItems;
@@ -104,7 +105,11 @@ public class RenderTickHandler {
 			GlStateManager.scale(scale, scale, 1F);
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
 			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
-			this.layout.draw(this.mc, 0, 0);
+			try{
+				this.layout.draw(this.mc, 0, 0);
+			}catch(final Exception e1){
+				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
+			}
 			GlStateManager.popMatrix();
 		}
 		this.lastStack = toCheck;
@@ -226,9 +231,13 @@ public class RenderTickHandler {
 			GlStateManager.scale(scale, scale, 1F);
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
 			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
-			this.layout.draw(this.mc, 0, 0);
-			if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
-				this.error.showError(this.mc, Math.round(x/scale+this.layout.getPosX()-x/scale-12),Math.round(y/scale+this.layout.getPosY()-y/scale-5), this.layout);
+			try{
+				this.layout.draw(this.mc, 0, 0);
+				if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
+					this.error.showError(this.mc, Math.round(x/scale+this.layout.getPosX()-x/scale-12),Math.round(y/scale+this.layout.getPosY()-y/scale-5), this.layout);
+			}catch(final Exception e1){
+				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
+			}
 			GlStateManager.popMatrix();
 		}
 		this.lastStack = e.itemStack;
