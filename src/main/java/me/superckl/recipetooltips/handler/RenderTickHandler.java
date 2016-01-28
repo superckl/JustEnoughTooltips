@@ -114,7 +114,8 @@ public class RenderTickHandler {
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
 			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
 			try{
-				this.layout.draw(this.mc, 0, 0);
+				//Fake mouse parameters, middle of recipe layout
+				this.layout.draw(this.mc, Math.round(this.layout.getPosX()+width/2), Math.round(this.layout.getPosY()+height/2));
 			}catch(final Exception e1){
 				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
 			}
@@ -185,7 +186,7 @@ public class RenderTickHandler {
 				e1.printStackTrace();
 			}
 		else if(this.mc.thePlayer != null && this.mc.thePlayer.openContainer != null && this.error == null && KeyBindings.FILL_RECIPE.getKeyCode() == key)
-			RecipeTransferUtil.transferRecipe(this.layout, this.mc.thePlayer, GuiScreen.isShiftKeyDown());
+			RecipeTransferUtil.transferRecipe(this.mc.thePlayer.openContainer, this.layout, this.mc.thePlayer, GuiScreen.isShiftKeyDown());
 	}
 
 	@SubscribeEvent //fired while in GUI, but isPressed returns false
@@ -205,12 +206,14 @@ public class RenderTickHandler {
 				e1.printStackTrace();
 				return;
 			}
-		if(this.gui.isOpen())
+		if(this.mc.currentScreen == this.gui)
 			return;
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
 		final float scale = Config.scaleInTooltip;
-		int x = Math.round(Mouse.getEventX() / resolution.getScaleFactor()-8);
-		int y = (this.mc.displayHeight - Mouse.getEventY()) / resolution.getScaleFactor();
+		final int mouseX = Math.round(Mouse.getEventX() / resolution.getScaleFactor());
+		final int mouseY = (this.mc.displayHeight - Mouse.getEventY()) / resolution.getScaleFactor();
+		int x = mouseX-8;
+		int y = mouseY;
 		this.checkLastItem(e.itemStack, x, y);
 		if(this.layout != null){
 			int width = this.logic.getRecipeCategory().getBackground().getWidth();
@@ -246,9 +249,11 @@ public class RenderTickHandler {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(scale, scale, 1F);
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
-			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
+			final float xDiff = x/scale-this.layout.getPosX();
+			final float yDiff = y/scale-this.layout.getPosY();
+			GlStateManager.translate(xDiff, yDiff, 501F);
 			try{
-				this.layout.draw(this.mc, 0, 0);
+				this.layout.draw(this.mc, Math.round(mouseX-xDiff), Math.round(mouseY - yDiff));
 				if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
 					this.error.showError(this.mc, Math.round(x/scale+this.layout.getPosX()-x/scale-12),Math.round(y/scale+this.layout.getPosY()-y/scale-5), this.layout);
 			}catch(final Exception e1){
@@ -288,7 +293,7 @@ public class RenderTickHandler {
 		final List<RecipeLayout> layouts = this.logic.getRecipeWidgets(x, y, 0);
 		this.layout = layouts.isEmpty() ? null:layouts.get(0);
 		if(this.layout != null && this.mc.thePlayer.openContainer != null)
-			this.error = RecipeTransferUtil.getTransferRecipeError(this.layout, this.mc.thePlayer);
+			this.error = RecipeTransferUtil.getTransferRecipeError(this.mc.thePlayer.openContainer, this.layout, this.mc.thePlayer);
 		else if(this.layout == null)
 			this.error = null;
 	}
