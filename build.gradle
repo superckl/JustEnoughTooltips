@@ -42,8 +42,8 @@ configFile.withReader {
 }
 
 version = config.mod_version
-group= "me.superckl.recipetooltips"
-archivesBaseName = "RecipeTooltips"
+group= "me.superckl.jet"
+archivesBaseName = "JustEnoughTooltips"
 
 minecraft {
     useDepAts = true
@@ -101,6 +101,6 @@ artifacts {
 jar {
     manifest {
         attributes 'ModSide': 'CLIENT'
-		attributes 'FMLAT': 'recipetooltips_at.cfg'
+		attributes 'FMLAT': 'jet_at.cfg'
     }
 }

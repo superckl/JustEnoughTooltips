@@ -1,11 +1,11 @@
 [
 {
-  "modid": "RecipeTooltips",
-  "name": "RecipeTooltips",
+  "modid": "JET",
+  "name": "JustEnoughTooltips",
   "description": "Quickly find and view recipes for items and blocks.",
   "version": "${mod_version}",
   "mcversion": "${minecraft_version}",
-  "url": "http://minecraft.curseforge.com/projects/recipetooltips",
+  "url": "http://minecraft.curseforge.com/projects/justenoughtooltips",
   "updateUrl": "",
   "authorList": [
     "superckl"
