@@ -61,7 +61,7 @@ version = "${config.minecraft_version}-${config.mod_version}.${System.getenv("BU
 
 dependencies {
     compile "org.projectlombok:lombok:1.16.6"
-	deobfCompile "mezz.jei:jei_1.8.9:2.23.0.108"
+	deobfCompile "mezz.jei:jei_1.8.9:2.24.2.125"
 }
 
 processResources
