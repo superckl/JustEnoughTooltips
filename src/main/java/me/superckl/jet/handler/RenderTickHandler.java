@@ -7,7 +7,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import me.superckl.jet.Config;
+import me.superckl.jet.JustEnoughTooltips;
 import me.superckl.jet.KeyBindings;
+import me.superckl.jet.integration.JERScissorHook;
 import me.superckl.jet.util.LogHelper;
 import me.superckl.jet.util.RecipeDrawingException;
 import me.superckl.jet.util.RenderHelper;
@@ -113,12 +115,15 @@ public class RenderTickHandler {
 			GlStateManager.scale(scale, scale, 1F);
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
 			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
+			final JERScissorHook hook = JustEnoughTooltips.instance.getScissorHook();
+			hook.setScale(scale).setX(x).setY(y).setResolution(e.resolution).setHeight(height).setWidth(width).setApply(true);
 			try{
 				//Fake mouse parameters, middle of recipe layout
 				this.layout.draw(this.mc, Math.round(this.layout.getPosX()+width/2), Math.round(this.layout.getPosY()+height/2));
 			}catch(final Exception e1){
 				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
 			}
+			hook.setApply(false);
 			GlStateManager.popMatrix();
 		}
 		this.lastStack = toCheck;
@@ -252,6 +257,8 @@ public class RenderTickHandler {
 			final float xDiff = x/scale-this.layout.getPosX();
 			final float yDiff = y/scale-this.layout.getPosY();
 			GlStateManager.translate(xDiff, yDiff, 501F);
+			final JERScissorHook hook = JustEnoughTooltips.instance.getScissorHook();
+			hook.setScale(scale).setX(x).setY(y).setResolution(resolution).setHeight(height).setWidth(width).setApply(true);
 			try{
 				this.layout.draw(this.mc, Math.round(mouseX-xDiff), Math.round(mouseY - yDiff));
 				if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
@@ -259,6 +266,7 @@ public class RenderTickHandler {
 			}catch(final Exception e1){
 				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
 			}
+			hook.setApply(false);
 			GlStateManager.popMatrix();
 		}
 		this.lastStack = e.itemStack;

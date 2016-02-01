@@ -1,4 +1,4 @@
-package me.superckl.jet.integration.jei;
+package me.superckl.jet.integration;
 
 import lombok.Getter;
 import mezz.jei.api.IItemRegistry;
