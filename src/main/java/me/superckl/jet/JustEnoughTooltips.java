@@ -2,10 +2,7 @@ package me.superckl.jet;
 
 import org.lwjgl.input.Keyboard;
 
-import lombok.Getter;
 import me.superckl.jet.handler.RenderTickHandler;
-import me.superckl.jet.integration.JERIntegrationModule;
-import me.superckl.jet.integration.JERScissorHook;
 import me.superckl.jet.reference.ModData;
 import mezz.jei.JustEnoughItems;
 import net.minecraft.client.settings.KeyBinding;
@@ -24,8 +21,8 @@ public class JustEnoughTooltips {
 	public static JustEnoughTooltips instance;
 	@Instance("JEI")
 	public static JustEnoughItems jeiInstance;
-	@Getter
-	private final JERScissorHook scissorHook = new JERScissorHook();
+	/*@Getter
+	private final JERScissorHook scissorHook = new JERScissorHook();*/
 
 	@EventHandler
 	public void onPreInit(final FMLPreInitializationEvent e){
@@ -35,8 +32,8 @@ public class JustEnoughTooltips {
 
 	@EventHandler
 	public void onInit(final FMLInitializationEvent e){
-		if(JERIntegrationModule.JER_API != null)
-			JERIntegrationModule.JER_API.getMobRegistry().registerScissorHook(RenderTickHandler.class, this.scissorHook);
+		/*if(JERIntegrationModule.JER_API != null)
+			JERIntegrationModule.JER_API.getMobRegistry().registerScissorHook(RenderTickHandler.class, this.scissorHook);*/
 
 		KeyBindings.DISPLAY_1 = new KeyBinding("Display Recipe", Keyboard.KEY_LMENU, ModData.NAME);
 		KeyBindings.NEXT_CATEGORY = new KeyBinding("Next Category", Keyboard.KEY_X, ModData.NAME);

@@ -48,7 +48,7 @@ public class Config {
 
 	@SubscribeEvent
 	public void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent e){
-		if(e.modID.equals(ModData.MOD_ID))
+		if(e.getModID().equals(ModData.MOD_ID))
 			Config.init(null);
 	}
 

@@ -7,9 +7,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import me.superckl.jet.Config;
-import me.superckl.jet.JustEnoughTooltips;
 import me.superckl.jet.KeyBindings;
-import me.superckl.jet.integration.JERScissorHook;
 import me.superckl.jet.util.LogHelper;
 import me.superckl.jet.util.RecipeDrawingException;
 import me.superckl.jet.util.RenderHelper;
@@ -32,8 +30,8 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent;
 import net.minecraftforge.client.event.MouseEvent;
@@ -61,24 +59,24 @@ public class RenderTickHandler {
 
 	@SubscribeEvent
 	public void onRenderTick(final RenderGameOverlayEvent.Pre e){
-		if(!Config.renderInGame || this.mc.currentScreen != null || e.type != ElementType.CROSSHAIRS || !KeyBindings.DISPLAY_1.isKeyDown())
+		if(!Config.renderInGame || this.mc.currentScreen != null || e.getType() != ElementType.CROSSHAIRS || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
 		ItemStack toCheck = null;
-		if(!this.mc.thePlayer.isSneaking() && this.mc.thePlayer.getHeldItem() != null)
-			toCheck = this.mc.thePlayer.getHeldItem();
+		if(!this.mc.thePlayer.isSneaking() && this.mc.thePlayer.getHeldItem(EnumHand.MAIN_HAND) != null)
+			toCheck = this.mc.thePlayer.getHeldItem(EnumHand.MAIN_HAND);
 		else{
-			final MovingObjectPosition pos = this.mc.getRenderViewEntity().rayTrace(this.mc.playerController.getBlockReachDistance(), 1.0F);
-			if(pos.typeOfHit == MovingObjectType.BLOCK){
+			final RayTraceResult pos = this.mc.getRenderViewEntity().rayTrace(this.mc.playerController.getBlockReachDistance(), 1.0F);
+			if(pos.typeOfHit == RayTraceResult.Type.BLOCK){
 				final IBlockState block = this.mc.theWorld.getBlockState(pos.getBlockPos());
 				if(block != null)
-					toCheck = block.getBlock().getPickBlock(pos, this.mc.theWorld, pos.getBlockPos(), this.mc.thePlayer);
+					toCheck = block.getBlock().getPickBlock(block, pos, this.mc.theWorld, pos.getBlockPos(), this.mc.thePlayer);
 			}
 		}
 		if(toCheck == null)
 			return;
 		final float scale = Config.scaleInGame;
-		int x = Math.round(e.resolution.getScaledWidth()/2);
-		int y = e.resolution.getScaledHeight()/2+13;
+		int x = Math.round(e.getResolution().getScaledWidth()/2);
+		int y = e.getResolution().getScaledHeight()/2+13;
 		this.checkLastItem(toCheck, x, y);
 		if(this.layout != null){
 			int width = this.logic.getRecipeCategory().getBackground().getWidth();
@@ -99,12 +97,12 @@ public class RenderTickHandler {
 			y += Config.yPaddingInGame;
 			if(y < 12)
 				y = 12;
-			else if(y + height*scale + 12*scale > e.resolution.getScaledHeight())
-				y = Math.round(e.resolution.getScaledHeight()-(height*scale+12*scale));
+			else if(y + height*scale + 12*scale > e.getResolution().getScaledHeight())
+				y = Math.round(e.getResolution().getScaledHeight()-(height*scale+12*scale));
 			if(x < 12)
 				x = 12;
-			else if(x + width*scale + 12*scale > e.resolution.getScaledWidth())
-				x = Math.round(e.resolution.getScaledWidth()-(width*scale+12*scale));
+			else if(x + width*scale + 12*scale > e.getResolution().getScaledWidth())
+				x = Math.round(e.getResolution().getScaledWidth()-(width*scale+12*scale));
 			RenderHelper.outlineGuiArea(x, y, 500, width, height, scale);
 			RenderHelper.fillGuiArea(x, y, 500, width, height, scale);
 			GlStateManager.popMatrix();
@@ -115,15 +113,15 @@ public class RenderTickHandler {
 			GlStateManager.scale(scale, scale, 1F);
 			//Translate to move the draw to the right spot. The x and y passed on creation of the layouts may not be accurate (resizing, position overrides, etc.)
 			GlStateManager.translate(x/scale-this.layout.getPosX(), y/scale-this.layout.getPosY(), 501F);
-			final JERScissorHook hook = JustEnoughTooltips.instance.getScissorHook();
-			hook.setScale(scale).setX(x).setY(y).setResolution(e.resolution).setHeight(height).setWidth(width).setApply(true);
+			//final JERScissorHook hook = JustEnoughTooltips.instance.getScissorHook();
+			//hook.setScale(scale).setX(x).setY(y).setResolution(e.getResolution()).setHeight(height).setWidth(width).setApply(true);
 			try{
 				//Fake mouse parameters, middle of recipe layout
 				this.layout.draw(this.mc, Math.round(this.layout.getPosX()+width/2), Math.round(this.layout.getPosY()+height/2));
 			}catch(final Exception e1){
 				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
 			}
-			hook.setApply(false);
+			//hook.setApply(false);
 			GlStateManager.popMatrix();
 		}
 		this.lastStack = toCheck;
@@ -133,9 +131,9 @@ public class RenderTickHandler {
 	public void onMouseInput(final MouseEvent e){
 		if(this.layout == null || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
-		if(e.dwheel != 0){
+		if(e.getDwheel() != 0){
 			e.setCanceled(true);
-			if(e.dwheel > 0){
+			if(e.getDwheel() > 0){
 				this.logic.nextPage();
 				this.needsReset = true;
 			}else{
@@ -201,7 +199,7 @@ public class RenderTickHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onRenderTooltip(final ItemTooltipEvent e){
-		if(!Config.renderInTooltips || e.itemStack == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
+		if(!Config.renderInTooltips || e.getItemStack() == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
 		if(this.gui == null)
 			try{
@@ -219,7 +217,7 @@ public class RenderTickHandler {
 		final int mouseY = (this.mc.displayHeight - Mouse.getEventY()) / resolution.getScaleFactor();
 		int x = mouseX-8;
 		int y = mouseY;
-		this.checkLastItem(e.itemStack, x, y);
+		this.checkLastItem(e.getItemStack(), x, y);
 		if(this.layout != null){
 			int width = this.logic.getRecipeCategory().getBackground().getWidth();
 			final int height = this.logic.getRecipeCategory().getBackground().getHeight();
@@ -257,8 +255,8 @@ public class RenderTickHandler {
 			final float xDiff = x/scale-this.layout.getPosX();
 			final float yDiff = y/scale-this.layout.getPosY();
 			GlStateManager.translate(xDiff, yDiff, 501F);
-			final JERScissorHook hook = JustEnoughTooltips.instance.getScissorHook();
-			hook.setScale(scale).setX(x).setY(y).setResolution(resolution).setHeight(height).setWidth(width).setApply(true);
+			//final JERScissorHook hook = JustEnoughTooltips.instance.getScissorHook();
+			//hook.setScale(scale).setX(x).setY(y).setResolution(resolution).setHeight(height).setWidth(width).setApply(true);
 			try{
 				this.layout.draw(this.mc, Math.round(mouseX-xDiff), Math.round(mouseY - yDiff));
 				if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
@@ -266,10 +264,10 @@ public class RenderTickHandler {
 			}catch(final Exception e1){
 				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
 			}
-			hook.setApply(false);
+			//hook.setApply(false);
 			GlStateManager.popMatrix();
 		}
-		this.lastStack = e.itemStack;
+		this.lastStack = e.getItemStack();
 	}
 
 	private void checkLastItem(final ItemStack toCheck, final int x, final int y){

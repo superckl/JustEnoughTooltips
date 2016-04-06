@@ -7,9 +7,9 @@ import org.lwjgl.opengl.GL11;
 import me.superckl.jet.reference.ModData;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -34,12 +34,12 @@ public class RenderHelper {
 	public static void drawTexturedRect(final ResourceLocation texture, final double x, final double y, final double z, final double minU, final double maxU, final double minV, final double maxV, final int width, final int height, final int imageWidth, final int imageHeight, final double scale) {
 		FMLClientHandler.instance().getClient().getTextureManager().bindTexture(texture);
 		final Tessellator tessellator = Tessellator.getInstance();
-		final WorldRenderer worldRender = tessellator.getWorldRenderer();
-		worldRender.begin(7, DefaultVertexFormats.POSITION_TEX);
-		worldRender.pos(x, y + (scale*height), z).tex(minU, maxV).endVertex();
-		worldRender.pos(x + (scale*width), y + (scale*height), z).tex(maxU, maxV).endVertex();
-		worldRender.pos(x + (scale*width), y, z).tex(maxU, minV).endVertex();
-		worldRender.pos(x, y, z).tex(minU, minV).endVertex();
+		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		vertexBuffer.pos(x, y + (scale*height), z).tex(minU, maxV).endVertex();
+		vertexBuffer.pos(x + (scale*width), y + (scale*height), z).tex(maxU, maxV).endVertex();
+		vertexBuffer.pos(x + (scale*width), y, z).tex(maxU, minV).endVertex();
+		vertexBuffer.pos(x, y, z).tex(minU, minV).endVertex();
 		tessellator.draw();
 	}
 

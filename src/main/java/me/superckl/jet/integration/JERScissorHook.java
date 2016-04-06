@@ -1,19 +1,14 @@
 package me.superckl.jet.integration;
 
-import jeresources.api.render.IScissorHook;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import me.superckl.jet.util.LogHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 
 @Accessors(chain = true)
 @Setter
-public class JERScissorHook implements IScissorHook{
+public class JERScissorHook /*implements IScissorHook*/{
 
-	private final Minecraft mc = FMLClientHandler.instance().getClient();
+	/*private final Minecraft mc = FMLClientHandler.instance().getClient();
 	private int x, y, width, height;
 	private ScaledResolution resolution;
 	private float scale;
@@ -32,6 +27,6 @@ public class JERScissorHook implements IScissorHook{
 		scissorInfo.y -= (this.y - guiTop)*this.resolution.getScaleFactor();
 		LogHelper.info("New Scissor: "+scissorInfo.x+":"+scissorInfo.y);
 		return scissorInfo;
-	}
+	}*/
 
 }
