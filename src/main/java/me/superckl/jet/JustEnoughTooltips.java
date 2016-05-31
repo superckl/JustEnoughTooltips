@@ -4,7 +4,6 @@ import org.lwjgl.input.Keyboard;
 
 import me.superckl.jet.handler.RenderTickHandler;
 import me.superckl.jet.reference.ModData;
-import mezz.jei.JustEnoughItems;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -14,13 +13,11 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = ModData.MOD_ID, name = ModData.NAME, version = ModData.VERSION, acceptableRemoteVersions = "*", guiFactory = "me.superckl.jet.gui.JETGuiFactory", dependencies = "required-after:JEI@[2.23.0.108,)")
+@Mod(modid = ModData.MOD_ID, name = ModData.NAME, version = ModData.VERSION, acceptableRemoteVersions = "*", guiFactory = "me.superckl.jet.gui.JETGuiFactory", dependencies = "required-after:JEI@[3.4.0.204,)")
 public class JustEnoughTooltips {
 
 	@Instance(ModData.MOD_ID)
 	public static JustEnoughTooltips instance;
-	@Instance("JEI")
-	public static JustEnoughItems jeiInstance;
 	/*@Getter
 	private final JERScissorHook scissorHook = new JERScissorHook();*/
 

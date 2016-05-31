@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
@@ -49,7 +49,7 @@ minecraft {
     useDepAts = true
 
     version = config.minecraft_version + "-" + config.forge_version + "-" + config.minecraft_version
-    mappings = "snapshot_20160406"
+    mappings = "snapshot_20160527"
 
     replaceIn "reference/ModData.java"
     replace "@VERSION@", "${config.mod_version}.${System.env.BUILD_NUMBER ?: 0}"
@@ -60,8 +60,8 @@ minecraft {
 version = "${config.minecraft_version}-${config.mod_version}.${System.getenv("BUILD_NUMBER") ?: 0}"
 
 dependencies {
-    compile "org.projectlombok:lombok:1.16.6"
-	deobfCompile "mezz.jei:jei_1.9:3.2.8.182"
+    compile "org.projectlombok:lombok:1.16.8"
+	deobfCompile "mezz.jei:jei_"+config.minecraft_version+":"+config.jei_version
 }
 
 processResources

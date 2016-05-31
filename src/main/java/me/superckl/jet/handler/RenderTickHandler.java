@@ -1,6 +1,5 @@
 package me.superckl.jet.handler;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -8,19 +7,17 @@ import org.lwjgl.input.Mouse;
 
 import me.superckl.jet.Config;
 import me.superckl.jet.KeyBindings;
+import me.superckl.jet.integration.JEIIntegrationModule;
 import me.superckl.jet.util.LogHelper;
 import me.superckl.jet.util.RecipeDrawingException;
 import me.superckl.jet.util.RenderHelper;
-import mezz.jei.GuiEventHandler;
-import mezz.jei.JustEnoughItems;
-import mezz.jei.ProxyCommonClient;
+import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.Focus.Mode;
 import mezz.jei.gui.IRecipeGuiLogic;
 import mezz.jei.gui.RecipeGuiLogic;
 import mezz.jei.gui.RecipeLayout;
-import mezz.jei.gui.RecipesGui;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.block.state.IBlockState;
@@ -45,12 +42,8 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 
 public class RenderTickHandler {
 
-	public static Field recipesGui;
-	public static Field guiEventHandler;
-
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
 	private final IRecipeGuiLogic logic = new RecipeGuiLogic();
-	private RecipesGui gui;
 	private Mode mode = Mode.OUTPUT;
 	private ItemStack lastStack;
 	private RecipeLayout layout;
@@ -180,9 +173,9 @@ public class RenderTickHandler {
 				if(this.lastStack != null){
 					this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer));
 					if(this.mode == Mode.OUTPUT)
-						this.gui.showRecipes(new Focus(this.lastStack));
+						this.getRecipesGui().showRecipes(this.lastStack);
 					else
-						this.gui.showUses(new Focus(this.lastStack));
+						this.getRecipesGui().showUses(this.lastStack);
 				}
 			} catch (final Exception e1) {
 				LogHelper.error("An error occurred when opening the recipes gui!");
@@ -201,15 +194,7 @@ public class RenderTickHandler {
 	public void onRenderTooltip(final ItemTooltipEvent e){
 		if(!Config.renderInTooltips || e.getItemStack() == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
-		if(this.gui == null)
-			try{
-				this.getRecipesGui();
-			}catch (final Exception e1){
-				LogHelper.error("An error occurred while getting the recipes gui!");
-				e1.printStackTrace();
-				return;
-			}
-		if(this.mc.currentScreen == this.gui)
+		if(this.mc.currentScreen == this.getRecipesGui())
 			return;
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
 		final float scale = Config.scaleInTooltip;
@@ -304,19 +289,8 @@ public class RenderTickHandler {
 			this.error = null;
 	}
 
-	private void getRecipesGui() throws Exception{
-		if(RenderTickHandler.guiEventHandler == null){
-			RenderTickHandler.guiEventHandler = ProxyCommonClient.class.getDeclaredField("guiEventHandler");
-			RenderTickHandler.guiEventHandler.setAccessible(true);
-		}
-		if(RenderTickHandler.recipesGui == null){
-			RenderTickHandler.recipesGui = GuiEventHandler.class.getDeclaredField("recipesGui");
-			RenderTickHandler.recipesGui.setAccessible(true);
-		}
-		if(this.gui == null){
-			final Object guiEventHandler = RenderTickHandler.guiEventHandler.get(JustEnoughItems.getProxy());
-			this.gui = (RecipesGui) RenderTickHandler.recipesGui.get(guiEventHandler);
-		}
+	private IRecipesGui getRecipesGui(){
+		return JEIIntegrationModule.jeiRuntime == null ? null:JEIIntegrationModule.jeiRuntime.getRecipesGui();
 	}
 
 }

@@ -10,10 +10,14 @@ import mezz.jei.api.JEIPlugin;
 @JEIPlugin
 public class JEIIntegrationModule implements IModPlugin{
 
+	public static IJeiRuntime jeiRuntime = null;
+
 	@Override
 	public void register(final IModRegistry registry) {}
 
 	@Override
-	public void onRuntimeAvailable(final IJeiRuntime jeiRuntime) {}
+	public void onRuntimeAvailable(final IJeiRuntime jeiRuntime) {
+		JEIIntegrationModule.jeiRuntime = jeiRuntime;
+	}
 
 }
