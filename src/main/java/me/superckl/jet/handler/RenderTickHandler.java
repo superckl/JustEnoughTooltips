@@ -11,11 +11,12 @@ import me.superckl.jet.integration.JEIIntegrationModule;
 import me.superckl.jet.util.LogHelper;
 import me.superckl.jet.util.RecipeDrawingException;
 import me.superckl.jet.util.RenderHelper;
+import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IRecipesGui;
+import mezz.jei.api.recipe.IFocus.Mode;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.gui.Focus;
-import mezz.jei.gui.Focus.Mode;
 import mezz.jei.gui.IRecipeGuiLogic;
+import mezz.jei.gui.MasterFocus;
 import mezz.jei.gui.RecipeGuiLogic;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
@@ -43,7 +44,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 public class RenderTickHandler {
 
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
-	private final IRecipeGuiLogic logic = new RecipeGuiLogic();
+	private IRecipeGuiLogic logic;
 	private Mode mode = Mode.OUTPUT;
 	private ItemStack lastStack;
 	private RecipeLayout layout;
@@ -54,6 +55,8 @@ public class RenderTickHandler {
 	public void onRenderTick(final RenderGameOverlayEvent.Pre e){
 		if(!Config.renderInGame || this.mc.currentScreen != null || e.getType() != ElementType.CROSSHAIRS || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
+		if(this.logic == null)
+			this.logic = new RecipeGuiLogic((RecipeRegistry) JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		ItemStack toCheck = null;
 		if(!this.mc.thePlayer.isSneaking() && this.mc.thePlayer.getHeldItem(EnumHand.MAIN_HAND) != null)
 			toCheck = this.mc.thePlayer.getHeldItem(EnumHand.MAIN_HAND);
@@ -124,6 +127,8 @@ public class RenderTickHandler {
 	public void onMouseInput(final MouseEvent e){
 		if(this.layout == null || !KeyBindings.DISPLAY_1.isKeyDown())
 			return;
+		if(this.logic == null)
+			this.logic = new RecipeGuiLogic((RecipeRegistry) JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		if(e.getDwheel() != 0){
 			e.setCanceled(true);
 			if(e.getDwheel() > 0){
@@ -140,6 +145,8 @@ public class RenderTickHandler {
 	public void onMouseInput2(final MouseInputEvent e){
 		if(this.layout == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
+		if(this.logic == null)
+			this.logic = new RecipeGuiLogic((RecipeRegistry) JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		if(Mouse.getEventDWheel() != 0){
 			e.setCanceled(true);
 			if(Mouse.getEventDWheel() > 0){
@@ -158,6 +165,8 @@ public class RenderTickHandler {
 			return;
 		if(this.layout == null || !Keyboard.isKeyDown(KeyBindings.DISPLAY_1.getKeyCode()))
 			return;
+		if(this.logic == null)
+			this.logic = new RecipeGuiLogic((RecipeRegistry) JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		final int key = Keyboard.getEventKey();
 		if(KeyBindings.NEXT_CATEGORY.getKeyCode() == key){
 			if(this.logic.hasMultipleCategories()){
@@ -196,6 +205,8 @@ public class RenderTickHandler {
 			return;
 		if(this.mc.currentScreen == this.getRecipesGui())
 			return;
+		if(this.logic == null)
+			this.logic = new RecipeGuiLogic((RecipeRegistry) JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		final ScaledResolution resolution = new ScaledResolution(this.mc);
 		final float scale = Config.scaleInTooltip;
 		final int mouseX = Math.round(Mouse.getEventX() / resolution.getScaleFactor());
@@ -245,7 +256,7 @@ public class RenderTickHandler {
 			try{
 				this.layout.draw(this.mc, Math.round(mouseX-xDiff), Math.round(mouseY - yDiff));
 				if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
-					this.error.showError(this.mc, Math.round(x/scale+this.layout.getPosX()-x/scale-12),Math.round(y/scale+this.layout.getPosY()-y/scale-5), this.layout);
+					this.error.showError(this.mc, Math.round(x/scale+this.layout.getPosX()-x/scale-12),Math.round(y/scale+this.layout.getPosY()-y/scale-5), this.layout, x , y);
 			}catch(final Exception e1){
 				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.layout.getRecipeCategory().getTitle(), e1);
 			}
@@ -267,8 +278,10 @@ public class RenderTickHandler {
 	private Mode tempMode;
 
 	private void resetGuiLogic(final ItemStack toCheck, final int x, final int y){
+		if(this.logic == null)
+			this.logic = new RecipeGuiLogic((RecipeRegistry) JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		this.needsReset = false;
-		final Focus focus = new Focus(toCheck);
+		final MasterFocus focus = new MasterFocus(JEIIntegrationModule.jeiRuntime.getRecipeRegistry(), toCheck);
 		focus.setMode(this.mode);
 		if(!this.logic.setFocus(focus)){
 			this.layout = null;

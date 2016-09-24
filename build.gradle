@@ -48,8 +48,8 @@ archivesBaseName = "JustEnoughTooltips"
 minecraft {
     useDepAts = true
 
-    version = config.minecraft_version + "-" + config.forge_version + "-" + config.minecraft_version
-    mappings = "snapshot_20160527"
+    version = config.minecraft_version + "-" + config.forge_version
+    mappings = "snapshot_20160518"
 
     replaceIn "reference/ModData.java"
     replace "@VERSION@", "${config.mod_version}.${System.env.BUILD_NUMBER ?: 0}"

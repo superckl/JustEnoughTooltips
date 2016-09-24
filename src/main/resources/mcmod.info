@@ -1,6 +1,6 @@
 [
 {
-  "modid": "JET",
+  "modid": "jet",
   "name": "JustEnoughTooltips",
   "description": "Quickly find and view recipes for items and blocks.",
   "version": "${mod_version}",
