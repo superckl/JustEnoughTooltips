@@ -13,10 +13,10 @@ import me.superckl.jet.util.RecipeDrawingException;
 import me.superckl.jet.util.RenderHelper;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IRecipesGui;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocus.Mode;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.IRecipeGuiLogic;
-import mezz.jei.gui.MasterFocus;
 import mezz.jei.gui.RecipeGuiLogic;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
@@ -281,8 +281,7 @@ public class RenderTickHandler {
 		if(this.logic == null)
 			this.logic = new RecipeGuiLogic((RecipeRegistry) JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		this.needsReset = false;
-		final MasterFocus focus = new MasterFocus(JEIIntegrationModule.jeiRuntime.getRecipeRegistry(), toCheck);
-		focus.setMode(this.mode);
+		final IFocus<ItemStack> focus = JEIIntegrationModule.jeiRuntime.getRecipeRegistry().createFocus(this.mode, toCheck);
 		if(!this.logic.setFocus(focus)){
 			this.layout = null;
 			this.error = null;
