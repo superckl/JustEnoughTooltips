@@ -23,9 +23,9 @@ public class JEIIntegrationModule implements IModPlugin{
 	}
 
 	@Override
-	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {}
+	public void registerItemSubtypes(final ISubtypeRegistry subtypeRegistry) {}
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration registry) {}
+	public void registerIngredients(final IModIngredientRegistration registry) {}
 
 }
