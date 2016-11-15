@@ -49,7 +49,7 @@ minecraft {
     useDepAts = true
 
     version = config.minecraft_version + "-" + config.forge_version
-    mappings = "snapshot_20160518"
+    mappings = "snapshot_20161111"
 
     replaceIn "reference/ModData.java"
     replace "@VERSION@", "${config.mod_version}.${System.env.BUILD_NUMBER ?: 0}"
