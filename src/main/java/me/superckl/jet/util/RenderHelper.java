@@ -51,7 +51,7 @@ public class RenderHelper {
 	}
 
 	public static void renderItem(final ItemStack itemstack, final int rX, final int rY, final float partialTicks, final RenderItem itemRenderer, final FontRenderer fontRenderer){
-		final float f = itemstack.animationsToGo - partialTicks;
+		final float f = itemstack.getAnimationsToGo() - partialTicks;
 
 		if (f > 0.0F)
 		{

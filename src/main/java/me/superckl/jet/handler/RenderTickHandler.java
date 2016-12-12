@@ -46,14 +46,14 @@ public class RenderTickHandler {
 		if(this.logic == null)
 			this.logic = new RecipeGuiLogic(JEIIntegrationModule.jeiRuntime.getRecipeRegistry());
 		ItemStack toCheck = null;
-		if(!this.mc.thePlayer.isSneaking() && this.mc.thePlayer.getHeldItem(EnumHand.MAIN_HAND) != null)
-			toCheck = this.mc.thePlayer.getHeldItem(EnumHand.MAIN_HAND);
+		if(!this.mc.player.isSneaking() && this.mc.player.getHeldItem(EnumHand.MAIN_HAND) != null)
+			toCheck = this.mc.player.getHeldItem(EnumHand.MAIN_HAND);
 		else{
 			final RayTraceResult pos = this.mc.getRenderViewEntity().rayTrace(this.mc.playerController.getBlockReachDistance(), 1.0F);
 			if(pos.typeOfHit == RayTraceResult.Type.BLOCK){
-				final IBlockState block = this.mc.theWorld.getBlockState(pos.getBlockPos());
+				final IBlockState block = this.mc.world.getBlockState(pos.getBlockPos());
 				if(block != null)
-					toCheck = block.getBlock().getPickBlock(block, pos, this.mc.theWorld, pos.getBlockPos(), this.mc.thePlayer);
+					toCheck = block.getBlock().getPickBlock(block, pos, this.mc.world, pos.getBlockPos(), this.mc.player);
 			}
 		}
 		if(toCheck == null)
@@ -157,7 +157,7 @@ public class RenderTickHandler {
 			try {
 				this.getRecipesGui();
 				if(this.lastStack != null){
-					this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer));
+					this.mc.displayGuiScreen(new GuiInventory(this.mc.player));
 					this.getRecipesGui().show(this.logic.getFocus());
 				}
 			} catch (final Exception e1) {
@@ -228,7 +228,7 @@ public class RenderTickHandler {
 			//hook.setScale(scale).setX(x).setY(y).setResolution(resolution).setHeight(height).setWidth(width).setApply(true);
 			try{
 				this.logic.getCurrentLayout().draw(this.mc, Math.round(mouseX-xDiff), Math.round(mouseY - yDiff));
-				if(this.mc.thePlayer.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
+				if(this.mc.player.openContainer != null && this.error != null && Keyboard.isKeyDown(KeyBindings.FILL_RECIPE.getKeyCode()))
 					this.error.showError(this.mc, Math.round(x/scale+/*this.layout.getPosX()-x/scale*/-12),Math.round(y/scale/*+this.layout.getPosY()-y/scale*/-5), this.logic.getCurrentLayout(), x , y);
 			}catch(final Exception e1){
 				throw new RecipeDrawingException("An error ocurred while drawing a recipe with category: "+this.logic.getSelectedRecipeCategory().getTitle(), e1);

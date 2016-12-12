@@ -56,7 +56,7 @@ public class RecipeGuiLogic {
 
 	public RecipeGuiLogic(final IRecipeRegistry recipeRegistry) {
 		this.recipeRegistry = recipeRegistry;
-		final IFocus focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
+		final IFocus focus = recipeRegistry.createFocus(IFocus.Mode.INPUT, null);
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
 		this.state = new State(focus, recipeCategories, 0, 0);
 		this.updateRecipes();
@@ -80,7 +80,7 @@ public class RecipeGuiLogic {
 	}
 
 	private int getRecipeCategoryIndex(final List<IRecipeCategory> recipeCategories) {
-		final Container container = Minecraft.getMinecraft().thePlayer.openContainer;
+		final Container container = Minecraft.getMinecraft().player.openContainer;
 		if (container == null)
 			return 0;
 
