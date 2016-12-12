@@ -59,6 +59,7 @@ public class RecipeGuiLogic {
 		final IFocus focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
 		this.state = new State(focus, recipeCategories, 0, 0);
+		this.updateRecipes();
 	}
 
 	public <V> boolean setFocus(final IFocus<V> focus) {
