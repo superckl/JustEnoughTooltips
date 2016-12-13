@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = ModData.MOD_ID, name = ModData.NAME, version = ModData.VERSION, acceptableRemoteVersions = "*", guiFactory = "me.superckl.jet.gui.JETGuiFactory", dependencies = "required-after:JEI@[3.4.0.204,)")
+@Mod(modid = ModData.MOD_ID, name = ModData.NAME, version = ModData.VERSION, acceptableRemoteVersions = "*", guiFactory = "me.superckl.jet.gui.JETGuiFactory", dependencies = "required-after:jei@[4.0.5.203,)")
 public class JustEnoughTooltips {
 
 	@Instance(ModData.MOD_ID)
